@@ -10,6 +10,21 @@ import { setupApp } from "~/logic/common-setup"
   document.documentElement.prepend(script)
   script.src = browser.runtime.getURL("dist/contentScripts/inject.global.js")
 
+  const style = document.createElement("style")
+  style.textContent = /* css */`
+@media only screen and (min-width: 999.01px) {
+  .volume-list .sect-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  .volume-list .sect-header .mobile-icon {
+    order: 2 !important;
+    font-size: 20px !important;
+  }
+}`
+  document.documentElement.appendChild(style)
+
   // mount component to context window
   const container = document.createElement("div")
   container.id = __NAME__

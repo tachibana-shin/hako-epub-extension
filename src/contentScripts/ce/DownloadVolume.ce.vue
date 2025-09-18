@@ -159,7 +159,7 @@ async function downloadD() {
 <template>
   <button
     v-if="downloadProgress === -1"
-    class="ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
+    class="btn ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
     @click.prevent.stop="!downloadDone ? downloadVolume() : downloadD()"
   >
     <i-hugeicons-apple-finder v-if="downloadDone" />
@@ -172,3 +172,14 @@ async function downloadD() {
     :size="30"
   />
 </template>
+
+<style lang="scss" scoped>
+.btn {
+  @media only screen and (min-width: 999.01px) {
+    margin: {
+      top: 0px !important;
+      bottom: 0px !important;
+    }
+  }
+}
+</style>
