@@ -21,6 +21,7 @@ import { setupApp } from "~/logic/common-setup"
   .volume-list .sect-header .mobile-icon {
     order: 2 !important;
     font-size: 20px !important;
+    display: block !important;
   }
 }`
   document.documentElement.appendChild(style)
