@@ -1,11 +1,31 @@
 import { defineConfig } from "vite"
+import type { Plugin } from "vite"
 import { sharedConfig } from "./vite.config.mjs"
 import { isDev, r } from "./scripts/utils"
 import packageJson from "./package.json"
+import { buildCSS } from "./scripts/build-ce-css"
 
+function WatchVuePlugin(): Plugin {
+  return {
+    name: "watch-vue",
+    // 日本語コメント: ファイル変更時に呼ばれるフック
+    watchChange(id) {
+      if (id.endsWith(".vue")) {
+        buildCSS()
+      }
+    },
+    buildStart() {
+      console.log("✅ Build started (content script)")
+    },
+    buildEnd() {
+      console.log("🏁 Build finished")
+    }
+  }
+}
 // bundling the content script using Vite
 export default defineConfig({
   ...sharedConfig,
+  plugins: [...sharedConfig.plugins!, WatchVuePlugin()],
   define: {
     "__DEV__": isDev,
     "__NAME__": JSON.stringify(packageJson.name),
@@ -20,13 +40,14 @@ export default defineConfig({
     emptyOutDir: false,
     sourcemap: isDev ? "inline" : false,
     lib: {
-      entry: r("src/contentScripts/index.ts"),
+      entry: r("src/contentScripts/inject.ts"),
       name: packageJson.name,
       formats: ["iife"]
     },
     rollupOptions: {
       output: {
-        entryFileNames: "index.global.js",
+        entryFileNames: "inject.global.js",
+        assetFileNames: "inject.style.css",
         extend: true
       }
     }

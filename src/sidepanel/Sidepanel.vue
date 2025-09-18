@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { storageDemo } from '~/logic/storage'
+import { storageDemo } from "~/logic/storage"
 
 function openOptionsPage() {
   browser.runtime.openOptionsPage()

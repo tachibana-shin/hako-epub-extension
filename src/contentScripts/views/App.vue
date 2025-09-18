@@ -1,12 +1,29 @@
 <script setup lang="ts">
-import { useToggle } from '@vueuse/core'
-import 'uno.css'
+import { useEventListener } from "@vueuse/core"
+import { type ExternalToast, Toaster, toast } from "vue-sonner"
+import "vue-sonner/style.css"
+import "uno.css"
 
-const [show, toggle] = useToggle(false)
+// const [show, toggle] = useToggle(false)
+useEventListener(
+  document,
+  "toast",
+  (
+    event: MessageEvent<{
+      msg: string
+      options: ExternalToast
+    }>
+  ) => {
+    toast(event.detail.msg, event.detail.options)
+  }
+)
 </script>
 
 <template>
-  <div class="fixed right-0 bottom-0 m-5 z-100 flex items-end font-sans select-none leading-1em">
+  <Toaster />
+  <!-- <div
+    class="fixed right-0 bottom-0 m-5 z-100 flex items-end font-sans select-none leading-1em"
+  >
     <div
       v-show="show"
       class="bg-white text-gray-800 rounded-lg shadow w-max h-min"
@@ -15,9 +32,7 @@ const [show, toggle] = useToggle(false)
       transition="opacity duration-300"
       :class="show ? 'opacity-100' : 'opacity-0'"
     >
-      <h1 class="text-lg">
-        Vitesse WebExt
-      </h1>
+      <h1 class="text-lg">Vitesse WebExt</h1>
       <SharedSubtitle />
     </div>
     <button
@@ -25,7 +40,7 @@ const [show, toggle] = useToggle(false)
       bg="teal-600 hover:teal-700"
       @click="toggle()"
     >
-      <pixelarticons-power class="block m-auto text-white text-lg" />
+      <i-pixelarticons-power class="block m-auto text-white text-lg" />
     </button>
-  </div>
+  </div> -->
 </template>

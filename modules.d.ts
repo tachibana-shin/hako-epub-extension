@@ -1,4 +1,4 @@
-declare module 'vue' {
+declare module "vue" {
   interface ComponentCustomProperties {
     $app: {
       context: string

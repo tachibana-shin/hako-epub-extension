@@ -1,13 +1,49 @@
-import { onMessage, sendMessage } from 'webext-bridge/background'
-import type { Tabs } from 'webextension-polyfill'
+import { onMessage } from "webext-bridge/background"
+import { setMany } from "idb-keyval"
 
 // only on dev mode
 if (import.meta.hot) {
   // @ts-expect-error for background HMR
-  import('/@vite/client')
+  import("/@vite/client")
   // load latest content script
-  import('./contentScriptHMR')
+  import("./contentScriptHMR")
 }
+
+const rules = [
+  {
+    id: 1,
+    priority: 1,
+    action: {
+      type: "modifyHeaders",
+      responseHeaders: [
+        {
+          header: "access-control-allow-origin",
+          operation: "set",
+          value: "*"
+        },
+        {
+          header: "access-control-allow-methods",
+          operation: "set",
+          value: "GET, POST, OPTIONS, HEAD, PUT, DELETE, PATCH"
+        },
+        {
+          header: "access-control-allow-headers",
+          operation: "set",
+          value: "*"
+        }
+      ]
+    },
+    condition: {
+      urlFilter: "#cors|",
+      resourceTypes: ["xmlhttprequest", "image", "media"]
+    }
+  }
+]
+
+chrome.declarativeNetRequest.updateDynamicRules({
+  removeRuleIds: [1, 2, 3],
+  addRules: rules
+})
 
 // remove or turn this off if you don't use side panel
 const USE_SIDE_PANEL = true
@@ -20,46 +56,11 @@ if (USE_SIDE_PANEL) {
     .catch((error: unknown) => console.error(error))
 }
 
-browser.runtime.onInstalled.addListener((): void => {
-  // eslint-disable-next-line no-console
-  console.log('Extension installed')
-})
+onMessage("save-volume", async ({ data: { slug, options, file } }) => {
+  await setMany([
+    [slug, JSON.stringify(options)],
+    [`${slug}_file`, file]
+  ])
 
-let previousTabId = 0
-
-// communication example: send previous tab title from background page
-// see shim.d.ts for type declaration
-browser.tabs.onActivated.addListener(async ({ tabId }) => {
-  if (!previousTabId) {
-    previousTabId = tabId
-    return
-  }
-
-  let tab: Tabs.Tab
-
-  try {
-    tab = await browser.tabs.get(previousTabId)
-    previousTabId = tabId
-  }
-  catch {
-    return
-  }
-
-  // eslint-disable-next-line no-console
-  console.log('previous tab', tab)
-  sendMessage('tab-prev', { title: tab.title }, { context: 'content-script', tabId })
-})
-
-onMessage('get-current-tab', async () => {
-  try {
-    const tab = await browser.tabs.get(previousTabId)
-    return {
-      title: tab?.title,
-    }
-  }
-  catch {
-    return {
-      title: undefined,
-    }
-  }
+  return { ok: true }
 })

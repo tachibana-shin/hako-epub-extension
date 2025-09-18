@@ -11,9 +11,7 @@
       "~/*": ["src/*"]
     },
     "resolveJsonModule": true,
-    "types": [
-      "vite/client"
-    ],
+    "types": ["vite/client", "vite-plugin-arraybuffer/types"],
     "strict": true,
     "noUnusedLocals": true,
     "esModuleInterop": true,
