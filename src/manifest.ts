@@ -3,6 +3,11 @@ import type { Manifest } from "webextension-polyfill"
 import type PkgType from "../package.json"
 import { isDev, isFirefox, port, r } from "../scripts/utils"
 
+export const initiatorDomains = ["hako.vn", "docln.net", "docln.sbs"]
+const host_permissions = initiatorDomains
+  .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
+  .flat(1)
+
 export async function getManifest() {
   const pkg = (await fs.readJSON(r("package.json"))) as typeof PkgType
 
@@ -13,14 +18,14 @@ export async function getManifest() {
     name: pkg.displayName || pkg.name,
     version: pkg.version,
     description: pkg.description,
-    action: {
-      default_icon: "assets/icon-512.png",
-      default_popup: "dist/popup/index.html"
-    },
-    options_ui: {
-      page: "dist/options/index.html",
-      open_in_tab: true
-    },
+    // action: {
+    //   default_icon: "assets/icon-512.png",
+    //   default_popup: "dist/popup/index.html"
+    // },
+    // options_ui: {
+    //   page: "dist/options/index.html",
+    //   open_in_tab: true
+    // },
     background: isFirefox
       ? {
           scripts: ["dist/background/index.mjs"],
@@ -30,21 +35,21 @@ export async function getManifest() {
           service_worker: "dist/background/index.mjs"
         },
     icons: {
-      16: "assets/icon-512.png",
-      48: "assets/icon-512.png",
-      128: "assets/icon-512.png"
+      16: "assets/icon-114.png",
+      48: "assets/icon-114.png",
+      128: "assets/icon-114.png"
     },
     permissions: [
       "tabs",
-      "storage",
+      // "storage",
       "activeTab",
-      "sidePanel",
+      // "sidePanel",
       "declarativeNetRequest"
     ],
-    host_permissions: ["*://*/*"],
+    host_permissions,
     content_scripts: [
       {
-        matches: ["<all_urls>"],
+        matches: host_permissions,
         js: ["dist/contentScripts/index.global.js"],
         all_frames: true,
         run_at: "document_start"
@@ -56,7 +61,7 @@ export async function getManifest() {
           "dist/contentScripts/style.css",
           "dist/contentScripts/inject.global.js"
         ],
-        matches: ["<all_urls>"]
+        matches: host_permissions
       }
     ],
     content_security_policy: {
@@ -67,18 +72,18 @@ export async function getManifest() {
     }
   }
 
-  // add sidepanel
-  if (isFirefox) {
-    manifest.sidebar_action = {
-      default_panel: "dist/sidepanel/index.html"
-    }
-  }
-  else {
-    // the sidebar_action does not work for chromium based
-    ;(manifest as any).side_panel = {
-      default_path: "dist/sidepanel/index.html"
-    }
-  }
+  // // add sidepanel
+  // if (isFirefox) {
+  //   manifest.sidebar_action = {
+  //     default_panel: "dist/sidepanel/index.html"
+  //   }
+  // }
+  // else {
+  //   // the sidebar_action does not work for chromium based
+  //   ;(manifest as any).side_panel = {
+  //     default_path: "dist/sidepanel/index.html"
+  //   }
+  // }
 
   // FIXME: not work in MV3
   if (isDev && false) {
