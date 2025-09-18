@@ -146,8 +146,9 @@ async function downloadD() {
   const [metadata, buffer] = await getMany([slug.value, `${slug.value}_file`])
 
   if (metadata && buffer) {
+    const options = JSON.parse(metadata)
     const blob = new Blob([buffer as ArrayBuffer])
-    saveAs(blob, `${metadata.title} - ${metadata.bookTitle}.epub`)
+    saveAs(blob, `${options.title} - ${options.bookTitle}.epub`)
   }
   else {
     delMany([slug.value, `${slug.value}_file`])
