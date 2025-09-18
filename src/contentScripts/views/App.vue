@@ -9,7 +9,7 @@ useEventListener(
   document,
   "toast",
   (
-    event: MessageEvent<{
+    event: CustomEvent<{
       msg: string
       options: ExternalToast
     }>
