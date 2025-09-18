@@ -3,7 +3,7 @@ import type { Manifest } from "webextension-polyfill"
 import type PkgType from "../package.json"
 import { isDev, isFirefox, port, r } from "../scripts/utils"
 
-export const initiatorDomains = ["hako.vn", "docln.net", "docln.sbs"]
+export const initiatorDomains = ["hako.vn", "hako.vip", "docln.net", "docln.sbs"]
 const host_permissions = initiatorDomains
   .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
   .flat(1)
@@ -46,7 +46,7 @@ export async function getManifest() {
       // "sidePanel",
       "declarativeNetRequest"
     ],
-    host_permissions,
+    host_permissions: ["*://*/*"],
     content_scripts: [
       {
         matches: host_permissions,
