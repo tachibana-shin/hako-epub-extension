@@ -31,7 +31,8 @@
     "test": "vitest test",
     "test:e2e": "playwright test",
     "postinstall": "simple-git-hooks",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "release": "bumpp package.json --commit --push --tag"
   },
   "dependencies": {
     "@ameinhardt/unocss-preset-daisy": "^1.1.8",
@@ -69,6 +70,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vueuse/core": "^13.9.0",
     "ansis": "^4.1.0",
+    "bumpp": "^10.2.3",
     "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
     "crx": "^5.0.1",

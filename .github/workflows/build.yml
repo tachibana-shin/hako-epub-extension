@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*.*.*
+    paths:
+      - package.json
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Pack
+        run: bun i && bun run build && bun pack
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.0.1
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files: extension.*
+          body: ${{ steps.changelog.outputs.changelog }}
