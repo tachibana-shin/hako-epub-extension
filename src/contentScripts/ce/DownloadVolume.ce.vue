@@ -86,22 +86,24 @@ async function downloadVolume() {
   const description = document
     .querySelector(".summary-content")
     ?.textContent?.trim()
-  const cover =
+  let cover =
     targetEl
       .querySelector(".volume-cover .content")
       ?.getAttribute("style")
-      ?.match(/url\(["'](.+)["']\)/)![1] ??
-      document
-        .querySelector(".series-cover .content")
-        ?.getAttribute("style")
-        ?.match(/url\(["'](.+)["']\)/)![1]
+      ?.match(/url\(["'](.+)["']\)/)![1]
+  if (!cover || cover.includes("nocover.jpg")) {
+    cover = document
+      .querySelector(".series-cover .content")
+      ?.getAttribute("style")
+      ?.match(/url\(["'](.+)["']\)/)![1]
+  }
   const chapterNumber =
     Number.parseFloat(
       targetEl
         .querySelector(".sect-title")!
         .textContent!.trim()
         .replace(/^tập|chapter|chap/i, "")
-    ) || Array.from(targetEl.parentNode!.children).indexOf(targetEl)
+    ) || Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(targetEl)
 
   const chapters = Array.from(
     targetEl.querySelectorAll("ul.list-chapters li > .chapter-name > a")
