@@ -103,7 +103,7 @@ async function downloadVolume() {
         .querySelector(".sect-title")!
         .textContent!.trim()
         .replace(/^tập|chapter|chap/i, "")
-    ) || Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(targetEl)
+    ) || (Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(targetEl) + 1)
 
   const chapters = Array.from(
     targetEl.querySelectorAll("ul.list-chapters li > .chapter-name > a")
