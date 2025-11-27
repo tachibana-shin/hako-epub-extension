@@ -35,7 +35,7 @@ class EPubExtend extends EPub {
         this.options.fonts.slice(i, i + this.options.batchSize).map((font) => {
           const d = retryAsync(
             () =>
-              fetch(font.url).then(async (res) =>
+              fetch(`${font.url}#cors`).then(async (res) =>
                 res.ok
                   ? res.blob()
                   : Promise.reject(new Error("Failed to fetch font"))
@@ -80,7 +80,7 @@ class EPubExtend extends EPub {
         this.images.slice(i, i + this.options.batchSize).map((image) => {
           const d = retryAsync(
             () =>
-              fetch(image.url).then(async (res) =>
+              fetch(`${image.url}#cors`).then(async (res) =>
                 res.ok
                   ? res.blob()
                   : Promise.reject(new Error("Failed to fetch image"))
