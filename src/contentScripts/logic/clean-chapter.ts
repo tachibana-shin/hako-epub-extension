@@ -5,6 +5,13 @@ export async function cleanChapter(html: string): Promise<string> {
   const $ = load(html, { xmlMode: true })
 
   $(".d-none").remove()
+  $('[id^="note"]').each((_, el) => {
+    const $el = $(el)
+    $el.find(".none-print.inline").remove()
+    $el.find(".note-content").parent().remove()
+  })
+  $("script").remove()
+
   $("[style]").each((_, el) => {
     const $el = $(el)
     if ($el.attr("style")?.match(/display:\s*none/)) $el.remove()
@@ -18,12 +25,21 @@ export async function cleanChapter(html: string): Promise<string> {
     $img.attr("src", src.endsWith("#cors") ? src : `${src}#cors`)
   })
 
-  return minify($("#chapter-content").html()!, {
+  const output = await minify($("#chapter-content").html()!, {
     collapseWhitespace: true,
     removeComments: true,
     removeRedundantAttributes: true,
     removeEmptyAttributes: true,
     minifyCSS: true,
     minifyJS: true
+  })
+
+  const notes = $('[id^="note"]')
+    .toArray()
+    .map((item) => $(item).attr("id")!)
+  return output.replace(/\[(note\d+)\]/g, (match, noteId) => {
+    if (!notes.includes(noteId)) return match
+    // Process noteId here
+    return `<a href="#anchor-${noteId}" class="note-link">*</a>`
   })
 }
