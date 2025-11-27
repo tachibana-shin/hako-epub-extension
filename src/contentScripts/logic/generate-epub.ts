@@ -3,6 +3,7 @@ import { retryAsync } from "ts-retry"
 import type { Content, Options } from "epub-gen-memory"
 import { EPub } from "epub-gen-memory/bundle"
 import { load } from "cheerio"
+import { get, set } from "idb-keyval"
 import { editFilesInEPUB } from "./edit-files-in-epub"
 import { cleanChapter } from "./clean-chapter"
 // eslint-disable-next-line ts/ban-ts-comment
@@ -31,7 +32,12 @@ class EPubExtend extends EPub {
       i < this.options.fonts.length;
       i += this.options.batchSize
     ) {
-      const fontContents = await Promise.all(
+      const fontContents: {
+        filename: string
+        url: string
+        mediaType: string
+        data: Blob | string
+      }[] = await Promise.all(
         this.options.fonts.slice(i, i + this.options.batchSize).map((font) => {
           const d = retryAsync(
             () =>
@@ -64,9 +70,9 @@ class EPubExtend extends EPub {
             : d
         })
       )
-      fontContents.forEach((font) =>
-        fonts.file(font.filename, font.data as Blob)
-      )
+      fontContents.forEach((font) => {
+        fonts.file(font.filename, font.data)
+      })
     }
   }
 
@@ -76,7 +82,13 @@ class EPubExtend extends EPub {
     const images = oebps.folder("images")!
 
     for (let i = 0; i < this.images.length; i += this.options.batchSize) {
-      const imageContents = await Promise.all(
+      const imageContents: {
+        data: Blob | string
+        url: string
+        id: string
+        extension: string | null
+        mediaType: string | null
+      }[] = await Promise.all(
         this.images.slice(i, i + this.options.batchSize).map((image) => {
           const d = retryAsync(
             () =>
@@ -111,9 +123,9 @@ class EPubExtend extends EPub {
             : d
         })
       )
-      imageContents.forEach((image) =>
+      imageContents.forEach((image) => {
         images.file(`${image.id}.${image.extension}`, image.data)
-      )
+      })
     }
   }
 
@@ -174,10 +186,18 @@ export async function generateEpub(
       limit(() =>
         retryAsync(
           async () => {
+            const cached = await get(`cached_${chapter.href}`)
+            if (cached) {
+              const content = await cleanChapter(cached)
+              onProgress((((index + 1) / chapters.length) * 50) / 100)
+              return { title: chapter.name, content }
+            }
+
             const response = await fetch(chapter.href)
             if (!response.ok) throw response.text()
 
             const html = await response.text()
+            await set(`cached_${chapter.href}`, html)
 
             const content = await cleanChapter(html)
 
