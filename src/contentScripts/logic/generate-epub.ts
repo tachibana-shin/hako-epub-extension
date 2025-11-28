@@ -91,12 +91,22 @@ class EPubExtend extends EPub {
       }[] = await Promise.all(
         this.images.slice(i, i + this.options.batchSize).map((image) => {
           const d = retryAsync(
-            () =>
-              fetch(`${image.url}#cors`).then(async (res) =>
-                res.ok
-                  ? res.blob()
-                  : Promise.reject(new Error("Failed to fetch image"))
-              ),
+            async () => {
+              const res = await fetch(`${image.url}#cors`)
+
+              // --- Handle specific status codes ---
+              if (res.status === 404 || res.status === 403) {
+                // Not found / forbidden → skip file creation
+                this.warn(`Skip image (HTTP ${res.status}): ${image.url}`)
+                return ""
+              }
+
+              if (!res.ok) {
+                throw new Error(`Failed to fetch image: ${res.status}`)
+              }
+
+              return await res.blob()
+            },
             {
               maxTry: this.options.retryTimes,
               delay: this.options.fetchTimeout,
@@ -124,6 +134,7 @@ class EPubExtend extends EPub {
         })
       )
       imageContents.forEach((image) => {
+        if (!image.data) return
         images.file(`${image.id}.${image.extension}`, image.data)
       })
     }
@@ -206,7 +217,6 @@ export async function generateEpub(
             return { title: chapter.name, content }
           },
           {
-            maxTry: 5,
             delay: 1000,
             onError(err, currentTry) {
               console.error(
@@ -228,7 +238,9 @@ export async function generateEpub(
       publisher,
       description,
       tocTitle: "Mục lục",
-      lang
+      lang,
+      retryTimes: 5_000,
+      batchSize: 5
     },
     results,
     (progress) => {
