@@ -40,6 +40,6 @@ export async function cleanChapter(html: string): Promise<string> {
   return output.replace(/\[(note\d+)\]/g, (match, noteId) => {
     if (!notes.includes(noteId)) return match
     // Process noteId here
-    return `<a id="anchor-${noteId}" href="#${noteId}" class="note-link">*</a>`
+    return `<a id="anchor-${noteId}" href="#${noteId}" class="note-link">**</a>`
   })
 }
