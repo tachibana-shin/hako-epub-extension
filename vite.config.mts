@@ -12,6 +12,7 @@ import AutoImport from "unplugin-auto-import/vite"
 import arrayBuffer from "vite-plugin-arraybuffer"
 import UnoCSS from "unocss/vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
+import removeConsole from "vite-plugin-remove-console"
 import { isDev, port, r } from "./scripts/utils"
 import packageJson from "./package.json"
 
@@ -79,7 +80,9 @@ export const sharedConfig: UserConfig = {
           `"${relative(dirname(path), "/assets")}/`
         )
       }
-    }
+    },
+
+    removeConsole()
   ],
   optimizeDeps: {
     include: ["vue", "@vueuse/core", "webextension-polyfill"],
