@@ -5,21 +5,42 @@ import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
 
-const { target } = defineProps<{
+const {
+  target,
+  title: propTitle,
+  cover: propCover,
+  qBookTitle = ".series-name",
+  qChapters = "ul.list-chapters li > .chapter-name > a",
+  qContainer = "#chapter-content",
+
+  publisher = "hako.vn",
+  lang = "vi"
+} = defineProps<{
   target: string
+  title?: string
+  cover?: string
+  qBookTitle?: string
+  qChapters?: string
+  qContainer?: string
+
+  publisher?: string
+  lang?: string
 }>()
 const targetEl = document.querySelector(`[v-id="${target}"]`)!
 if (!targetEl) throw new Error(`Target v-id='${target}' not found`)
 
 const slug = computed(() => {
+  const slug = (
+    document.querySelector("link[rel=canonical]")?.getAttribute("href") ??
+    location.pathname
+  )
+    .split("/")
+    .filter(Boolean)
+    .at(-1)!
+
   return (
-    (
-      document.querySelector("link[rel=canonical]")?.getAttribute("href") ??
-      location.pathname
-    )
-      .split("/")
-      .filter(Boolean)
-      .at(-1)! + targetEl.querySelector(".sect-title")!.textContent.trim()
+    slug +
+    (propTitle ?? targetEl.querySelector(".sect-title")!.textContent.trim())
   )
 })
 
@@ -44,8 +65,7 @@ watchEffect(() => {
       window.addEventListener("beforeunload", onBeforeUnload)
       hasListenBeforeUnload = true
     }
-  }
-  else {
+  } else {
     if (hasListenBeforeUnload) {
       window.removeEventListener("beforeunload", onBeforeUnload)
       hasListenBeforeUnload = false
@@ -57,8 +77,9 @@ async function downloadVolume() {
   blocking.value++
   console.log("download volume")
 
-  const title = targetEl.querySelector(".sect-title")!.textContent.trim()
-  const bookTitle = document.querySelector(".series-name")!.textContent.trim()
+  const title =
+    propTitle ?? targetEl.querySelector(".sect-title")!.textContent.trim()
+  const bookTitle = document.querySelector(qBookTitle)!.textContent.trim()
   const infoItems = Array.from(document.querySelectorAll(".info-item"))
 
   const author = Array.from(
@@ -81,12 +102,11 @@ async function downloadVolume() {
       .flat(1)
       .filter(Boolean)
   ]
-  const publisher = "hako.vn"
-  const lang = "vi"
   const description = document
     .querySelector(".summary-content")
     ?.textContent?.trim()
   let cover =
+    propCover ??
     targetEl
       .querySelector(".volume-cover .content")
       ?.getAttribute("style")
@@ -98,21 +118,19 @@ async function downloadVolume() {
       ?.match(/url\(["'](.+)["']\)/)![1]
   }
   const chapterNumber =
-    Number.parseFloat(
+    Number.parseFloat(title.replace(/^tập|chapter|chap/i, "")) ||
+    Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(
       targetEl
-        .querySelector(".sect-title")!
-        .textContent!.trim()
-        .replace(/^tập|chapter|chap/i, "")
-    ) || (Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(targetEl) + 1)
+    ) + 1
 
-  const chapters = Array.from(
-    targetEl.querySelectorAll("ul.list-chapters li > .chapter-name > a")
-  ).map((anchor) => {
-    return {
-      name: anchor.textContent.trim(),
-      href: anchor.getAttribute("href")!
+  const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
+    (anchor) => {
+      return {
+        name: anchor.textContent.trim(),
+        href: anchor.getAttribute("href")!
+      }
     }
-  })
+  )
 
   const options = {
     title,
@@ -126,10 +144,14 @@ async function downloadVolume() {
     chapterNumber,
     chapters
   }
-  const { buffer } = await generateEpub(options, (progress) => {
-    console.log(`Generating EPUB: ${progress * 100}%`)
-    downloadProgress.value = progress
-  })
+  const { buffer } = await generateEpub(
+    options,
+    (progress) => {
+      console.log(`Generating EPUB: ${progress * 100}%`)
+      downloadProgress.value = progress
+    },
+    qContainer
+  )
 
   downloadDone.value = true
   downloadProgress.value = -1
@@ -151,8 +173,7 @@ async function downloadD() {
     const options = JSON.parse(metadata)
     const blob = new Blob([buffer as ArrayBuffer])
     saveAs(blob, `${options.title} - ${options.bookTitle}.epub`)
-  }
-  else {
+  } else {
     delMany([slug.value, `${slug.value}_file`])
     toastShadow("File not found retry download", { type: "error" })
   }

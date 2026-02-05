@@ -1,7 +1,12 @@
+// eslint-disable-next-line import/order
+import { isSonako } from "../vars"
 import { load } from "cheerio"
 import { minify } from "html-minifier-terser"
 
-export async function cleanChapter(html: string): Promise<string> {
+export async function cleanChapter(
+  html: string,
+  qContainer = "#chapter-content"
+): Promise<string> {
   const $ = load(html, { xmlMode: true })
 
   $(".d-none").remove()
@@ -10,13 +15,13 @@ export async function cleanChapter(html: string): Promise<string> {
     $el.find(".none-print.inline").remove()
     $el.find(".note-content").parent().remove()
   })
-  $("script").remove()
+  $("script, noscript").remove()
 
   $("[style]").each((_, el) => {
     const $el = $(el)
     if ($el.attr("style")?.match(/display:\s*none/)) $el.remove()
   })
-  $("#chapter-content > a[target='__blank']").remove()
+  $(`${qContainer} > a[target='__blank']`).remove()
 
   $("img").each((_, image) => {
     const $img = $(image)
@@ -25,7 +30,18 @@ export async function cleanChapter(html: string): Promise<string> {
     $img.attr("src", src.endsWith("#cors") ? src : `${src}#cors`)
   })
 
-  const output = await minify($("#chapter-content").html()!, {
+  // sonako
+  if (isSonako) {
+    // $("h3:has(.mw-editsection)").remove()
+
+    $(".dotEPUBremove, .mw-editsection").remove()
+    // sonako not need toc default
+    $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
+
+    $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
+  }
+
+  const output = await minify($(qContainer).html()!, {
     collapseWhitespace: true,
     removeComments: true,
     removeRedundantAttributes: true,

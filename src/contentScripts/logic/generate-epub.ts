@@ -175,7 +175,8 @@ export interface OptionsGenerateEpub {
 
 export async function generateEpub(
   options: OptionsGenerateEpub,
-  onProgress: (progress: number) => void
+  onProgress: (progress: number) => void,
+  qContainer?: string,
 ): Promise<Uint8Array> {
   const {
     title,
@@ -199,7 +200,7 @@ export async function generateEpub(
           async () => {
             const cached = await get(`cached_${chapter.href}`)
             if (cached) {
-              const content = await cleanChapter(cached)
+              const content = await cleanChapter(cached, qContainer)
               onProgress((((index + 1) / chapters.length) * 50) / 100)
               return { title: chapter.name, content }
             }
@@ -210,7 +211,7 @@ export async function generateEpub(
             const html = await response.text()
             await set(`cached_${chapter.href}`, html)
 
-            const content = await cleanChapter(html)
+            const content = await cleanChapter(html, qContainer)
 
             onProgress((((index + 1) / chapters.length) * 50) / 100)
 

@@ -3,7 +3,7 @@ import type { Manifest } from "webextension-polyfill"
 import type PkgType from "../package.json"
 import { isDev, isFirefox, port, r } from "../scripts/utils"
 
-export const initiatorDomains = ["hako.vn", "hako.vip", "docln.net", "docln.sbs"]
+export const initiatorDomains = ["hako.vn", "hako.vip", "docln.net", "docln.sbs", "sonako.fandom.com"]
 const host_permissions = initiatorDomains
   .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
   .flat(1)

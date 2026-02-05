@@ -7,6 +7,7 @@ export default antfu({
     "style/comma-dangle": "off",
     "style/operator-linebreak": "off",
     "antfu/if-newline": "off",
-    "style/arrow-parens": "off"
+    "style/arrow-parens": "off",
+    "style/brace-style": "off"
   }
 })
