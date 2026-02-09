@@ -1,9 +1,17 @@
-import fs from "fs-extra"
 import type { Manifest } from "webextension-polyfill"
-import type PkgType from "../package.json"
+import fs from "fs-extra"
 import { isDev, isFirefox, port, r } from "../scripts/utils"
 
-export const initiatorDomains = ["hako.vn", "hako.vip", "docln.net", "docln.sbs", "sonako.fandom.com"]
+import type PkgType from "../package.json"
+
+export const initiatorDomains = [
+  "hako.vn",
+  "hako.vip",
+  "docln.net",
+  "docln.sbs",
+  "sonako.fandom.com",
+  "www.baka-tsuki.org"
+]
 const host_permissions = initiatorDomains
   .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
   .flat(1)

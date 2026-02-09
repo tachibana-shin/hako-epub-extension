@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/order
-import { isSonako } from "../vars"
+import { isBakaTsuki, isSonako } from "../vars"
 import { load } from "cheerio"
 import { minify } from "html-minifier-terser"
 
@@ -39,6 +39,10 @@ export async function cleanChapter(
     $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
 
     $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
+  }
+  if (isBakaTsuki) {
+    $(".wikitable, .mw-editsection, .printfooter").remove()
+    $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
   }
 
   const output = await minify($(qContainer).html()!, {

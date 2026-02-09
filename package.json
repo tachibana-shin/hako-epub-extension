@@ -3,7 +3,7 @@
   "displayName": "Hako EPub",
   "version": "0.0.17",
   "private": true,
-  "description": "Tiện ích tải EPub trên hako.vn docln và sonako",
+  "description": "Tiện ích tải EPub trên hako.vn docln, sonako và baka-tsuki",
   "scripts": {
     "dev": "npm run clear && cross-env NODE_ENV=development run-p 'dev:*'",
     "dev-firefox": "npm run clear && cross-env NODE_ENV=development EXTENSION=firefox run-p dev:*",
