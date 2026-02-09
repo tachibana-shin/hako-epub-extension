@@ -9,6 +9,7 @@ const {
   target,
   title: propTitle,
   cover: propCover,
+  author: propAuthor,
   qBookTitle = ".series-name",
   qChapters = "ul.list-chapters li > .chapter-name > a",
   qContainer = "#chapter-content",
@@ -19,6 +20,7 @@ const {
   target: string
   title?: string
   cover?: string
+  author?: string
   qBookTitle?: string
   qChapters?: string
   qContainer?: string
@@ -49,7 +51,6 @@ const downloadDone = ref(false)
 
 watchEffect(() => {
   get(slug.value).then((exists) => {
-    console.log({ exists })
     if (exists) downloadDone.value = true
   })
 })
@@ -82,14 +83,16 @@ async function downloadVolume() {
   const bookTitle = document.querySelector(qBookTitle)!.textContent.trim()
   const infoItems = Array.from(document.querySelectorAll(".info-item"))
 
-  const author = Array.from(
-    infoItems
-      .find((info) =>
-        info.querySelector(".info-name")?.textContent.includes("Tác giả:")
-      )
-      ?.querySelector(".info-value")
-      ?.querySelectorAll("a, span") ?? []
-  ).map((el) => el.textContent.trim())
+  const author =
+    propAuthor?.split("|") ??
+    Array.from(
+      infoItems
+        .find((info) =>
+          info.querySelector(".info-name")?.textContent.includes("Tác giả:")
+        )
+        ?.querySelector(".info-value")
+        ?.querySelectorAll("a, span") ?? []
+    ).map((el) => el.textContent.trim())
   const tags = [
     bookTitle,
     ...Array.from(document.querySelectorAll(".series-gerne-item"))
@@ -178,6 +181,24 @@ async function downloadD() {
     toastShadow("File not found retry download", { type: "error" })
   }
 }
+
+function confirmDelete() {
+  // eslint-disable-next-line no-alert
+  if (!confirm(`Are you sure delete cache this?`)) return
+
+  const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
+    (anchor) => anchor.getAttribute("href")!
+  )
+
+  delMany([
+    slug.value,
+    `${slug.value}_file`,
+
+    ...chapters.map((chapter) => `cached_${chapter}`)
+  ])
+
+  downloadDone.value = false
+}
 </script>
 
 <template>
@@ -185,6 +206,7 @@ async function downloadD() {
     v-if="downloadProgress === -1"
     class="btn ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
     @click.prevent.stop="!downloadDone ? downloadVolume() : downloadD()"
+    @contextmenu.prevent.stop="confirmDelete"
   >
     <i-hugeicons-apple-finder v-if="downloadDone" />
     <i-hugeicons-download-04 v-else />

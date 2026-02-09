@@ -4,8 +4,15 @@ import { register } from "./ce/register"
 register()
 function injector() {
   if (isSonako) {
+    const author = Array.from(document.querySelectorAll("h2"))
+      .find((t) => t.textContent?.includes("viết bởi"))
+      ?.textContent?.split("viết bởi")
+      .at(-1)
+      ?.trim()
     document
-      .querySelectorAll("h3:has(+ ul), h3:has(+ figure + ul)")
+      .querySelectorAll(
+        "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), h3:has(+ figure + table), h3:has(+ figure + * + table)"
+      )
       .forEach((h3) => {
         if (h3.querySelector("download-volume")) return
 
@@ -19,23 +26,28 @@ function injector() {
           ul = ul.nextElementSibling
         }
 
-        if (ul && ul.tagName === "UL") {
-          const downloadVolume = document.createElement("download-volume")
-
-          const id = crypto.randomUUID()
-          ul.setAttribute("v-id", id)
-
-          downloadVolume.setAttribute("target", id)
-          downloadVolume.setAttribute("title", h3.textContent.trim())
-          if (cover)
-            downloadVolume.setAttribute("cover", cover.split("/revision/")[0])
-          downloadVolume.setAttribute("q-book-title", ".mw-page-title-main")
-          downloadVolume.setAttribute("q-chapters", "li > a")
-          downloadVolume.setAttribute("q-container", "#mw-content-text")
-          downloadVolume.setAttribute("publisher", "sonako.fandom.com")
-
-          h3.appendChild(downloadVolume)
+        while (ul && ul.tagName !== "UL" && ul.tagName !== "TABLE") {
+          ul = ul.nextElementSibling
         }
+
+        if (ul === null) return false
+
+        const downloadVolume = document.createElement("download-volume")
+
+        const id = crypto.randomUUID()
+        ul.setAttribute("v-id", id)
+
+        downloadVolume.setAttribute("target", id)
+        downloadVolume.setAttribute("title", h3.textContent.trim())
+        if (cover)
+          downloadVolume.setAttribute("cover", cover.split("/revision/")[0])
+        if (author) downloadVolume.setAttribute("author", author)
+        downloadVolume.setAttribute("q-book-title", ".mw-page-title-main")
+        downloadVolume.setAttribute("q-chapters", "li > a")
+        downloadVolume.setAttribute("q-container", "#mw-content-text")
+        downloadVolume.setAttribute("publisher", "sonako.fandom.com")
+
+        h3.appendChild(downloadVolume)
       })
   } else {
     document
