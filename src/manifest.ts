@@ -31,7 +31,10 @@ export async function getManifest() {
     browser_specific_settings: isFirefox
       ? {
           gecko: {
-            id: "hako-epub@shin.is-a.dev"
+            id: "hako-epub@shin.is-a.dev",
+            ["data_collection_permissions" as unknown as any]: {
+              required: ["none"]
+            }
           }
         }
       : undefined,
@@ -53,7 +56,8 @@ export async function getManifest() {
       // "storage",
       "activeTab",
       // "sidePanel",
-      "declarativeNetRequest"
+      "declarativeNetRequest",
+      ...(isFirefox ? ["webRequest", "webRequestBlocking"] : [])
     ],
     host_permissions: ["*://*/*"],
     content_scripts: [
@@ -93,15 +97,6 @@ export async function getManifest() {
   //     default_path: "dist/sidepanel/index.html"
   //   }
   // }
-
-  if (isFirefox) {
-    ;(manifest as any).data_collection_permissions = {
-      collection: {
-        usage: "none",
-        details: ""
-      }
-    }
-  }
 
   // FIXME: not work in MV3
   if (isDev && false) {
