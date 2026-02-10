@@ -28,6 +28,13 @@ export async function getManifest() {
     //   page: "dist/options/index.html",
     //   open_in_tab: true
     // },
+    browser_specific_settings: isFirefox
+      ? {
+          gecko: {
+            id: "hako-epub@shin.is-a.dev"
+          }
+        }
+      : undefined,
     background: isFirefox
       ? {
           scripts: ["dist/background/index.mjs"],
