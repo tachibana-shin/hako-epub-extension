@@ -32,6 +32,7 @@ const registry: SiteConfig[] = [
         ?.textContent?.split("viết bởi")
         .at(-1)
         ?.trim()
+        .replace("[]", "")
     },
     findBlocks:
       "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), h3:has(+ figure + table), h3:has(+ figure + * + table)",
@@ -74,7 +75,7 @@ const registry: SiteConfig[] = [
 
       $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
     },
-    title: (h3) => h3.textContent.trim()
+    title: (h3) => h3.textContent.trim().replace("[]", "")
   },
   {
     domains: ["baka-tsuki.org", "www.baka-tsuki.org"],
