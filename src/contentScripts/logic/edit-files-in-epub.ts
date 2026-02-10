@@ -11,7 +11,7 @@ import JSZip from "jszip"
  * @returns Edited EPUB as Uint8Array
  */
 export async function editFilesInEPUB(
-  buffer: Uint8Array,
+  buffer: ArrayBuffer,
   editors: Record<string, (content?: string) => string | Uint8Array>
 ): Promise<Uint8Array> {
   // load epub as zip

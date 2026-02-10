@@ -1,11 +1,11 @@
-// eslint-disable-next-line import/order
-import { isBakaTsuki, isSonako } from "../vars"
+import type { CheerioAPI } from "cheerio"
 import { load } from "cheerio"
 import { minify } from "html-minifier-terser"
 
 export async function cleanChapter(
   html: string,
-  qContainer = "#chapter-content"
+  qContainer: string,
+  cleaner: ($: CheerioAPI) => void
 ): Promise<string> {
   const $ = load(html, { xmlMode: true })
 
@@ -30,20 +30,7 @@ export async function cleanChapter(
     $img.attr("src", src.endsWith("#cors") ? src : `${src}#cors`)
   })
 
-  // sonako
-  if (isSonako) {
-    // $("h3:has(.mw-editsection)").remove()
-
-    $(".dotEPUBremove, .mw-editsection").remove()
-    // sonako not need toc default
-    $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
-
-    $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
-  }
-  if (isBakaTsuki) {
-    $(".wikitable, .mw-editsection, .printfooter").remove()
-    $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
-  }
+  cleaner($)
 
   const output = await minify($(qContainer).html()!, {
     collapseWhitespace: true,

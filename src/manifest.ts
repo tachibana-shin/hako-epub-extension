@@ -3,15 +3,9 @@ import fs from "fs-extra"
 import { isDev, isFirefox, port, r } from "../scripts/utils"
 
 import type PkgType from "../package.json"
+import registry from "./contentScripts/registry"
 
-export const initiatorDomains = [
-  "hako.vn",
-  "hako.vip",
-  "docln.net",
-  "docln.sbs",
-  "sonako.fandom.com",
-  "www.baka-tsuki.org"
-]
+export const initiatorDomains = registry.map((item) => item.domains).flat(1)
 const host_permissions = initiatorDomains
   .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
   .flat(1)

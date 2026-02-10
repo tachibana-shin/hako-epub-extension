@@ -2,6 +2,7 @@ import pLimit from "p-limit"
 import { retryAsync } from "ts-retry"
 import type { Content, Options } from "epub-gen-memory"
 import { EPub } from "epub-gen-memory/bundle"
+import type { CheerioAPI } from "cheerio"
 import { load } from "cheerio"
 import { get, set } from "idb-keyval"
 import { editFilesInEPUB } from "./edit-files-in-epub"
@@ -176,7 +177,8 @@ export interface OptionsGenerateEpub {
 export async function generateEpub(
   options: OptionsGenerateEpub,
   onProgress: (progress: number) => void,
-  qContainer?: string,
+  qContainer: string,
+  cleaner: ($: CheerioAPI) => void
 ): Promise<Uint8Array> {
   const {
     title,
@@ -200,7 +202,7 @@ export async function generateEpub(
           async () => {
             const cached = await get(`cached_${chapter.href}`)
             if (cached) {
-              const content = await cleanChapter(cached, qContainer)
+              const content = await cleanChapter(cached, qContainer, cleaner)
               onProgress((((index + 1) / chapters.length) * 50) / 100)
               return { title: chapter.name, content }
             }
@@ -211,7 +213,7 @@ export async function generateEpub(
             const html = await response.text()
             await set(`cached_${chapter.href}`, html)
 
-            const content = await cleanChapter(html, qContainer)
+            const content = await cleanChapter(html, qContainer, cleaner)
 
             onProgress((((index + 1) / chapters.length) * 50) / 100)
 

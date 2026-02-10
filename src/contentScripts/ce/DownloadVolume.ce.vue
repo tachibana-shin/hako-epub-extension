@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import saveAs from "file-saver"
 import { delMany, get, getMany, setMany } from "idb-keyval"
+import type { CheerioAPI } from "cheerio"
 import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
@@ -14,6 +15,8 @@ const {
   qChapters = "ul.list-chapters li > .chapter-name > a",
   qContainer = "#chapter-content",
 
+  cleaner: propCleaner = (_) => {},
+
   publisher = "hako.vn",
   lang = "vi"
 } = defineProps<{
@@ -24,6 +27,8 @@ const {
   qBookTitle?: string
   qChapters?: string
   qContainer?: string
+
+  cleaner?: ($: CheerioAPI) => void
 
   publisher?: string
   lang?: string
@@ -153,7 +158,8 @@ async function downloadVolume() {
       console.log(`Generating EPUB: ${progress * 100}%`)
       downloadProgress.value = progress
     },
-    qContainer
+    qContainer,
+    propCleaner
   )
 
   downloadDone.value = true
