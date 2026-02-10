@@ -7,12 +7,8 @@ import { load } from "cheerio"
 import { get, set } from "idb-keyval"
 import { editFilesInEPUB } from "./edit-files-in-epub"
 import { cleanChapter } from "./clean-chapter"
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-ignore
-import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?buffer&base64"
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-ignore
-import UTMLinotypeZapfinoKTTTF from "~/assets/fonts/UTM_LinotypeZapfinoKT.ttf?buffer&base64"
+import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
+import UTMLinotypeZapfinoKTTTF from "~/assets/fonts/UTM_LinotypeZapfinoKT.ttf?uint8array&base64"
 
 class EPubExtend extends EPub {
   constructor(
