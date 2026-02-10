@@ -94,6 +94,15 @@ export async function getManifest() {
   //   }
   // }
 
+  if (isFirefox) {
+    ;(manifest as any).data_collection_permissions = {
+      collection: {
+        usage: "none",
+        details: ""
+      }
+    }
+  }
+
   // FIXME: not work in MV3
   if (isDev && false) {
     // for content script, as browsers will cache them for each reload,
