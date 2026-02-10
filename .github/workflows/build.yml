@@ -28,5 +28,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v0.1.14
         with:
-          files: extension.* extension-firefox.*
+          files: |
+            extension.*
+            extension-firefox.*
           body: ${{ steps.changelog.outputs.changelog }}
