@@ -4,7 +4,7 @@ import type { Content, Options } from "epub-gen-memory"
 import { EPub } from "epub-gen-memory/bundle"
 import type { CheerioAPI } from "cheerio"
 import { load } from "cheerio"
-import { get, set } from "idb-keyval"
+import { del, get, set } from "idb-keyval"
 import { editFilesInEPUB } from "./edit-files-in-epub"
 import { cleanChapter } from "./clean-chapter"
 import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
@@ -96,6 +96,11 @@ class EPubExtend extends EPub {
                 // Not found / forbidden → skip file creation
                 this.warn(`Skip image (HTTP ${res.status}): ${image.url}`)
                 return ""
+              }
+
+              if (res.status === 429) {
+                // hmm sleep 1 minutes
+                await new Promise((r) => setTimeout(r, 60_000))
               }
 
               if (!res.ok) {
@@ -193,40 +198,43 @@ export async function generateEpub(
 
   const results: Content = await Promise.all(
     chapters.map((chapter, index) =>
-      limit(() =>
-        retryAsync(
-          async () => {
-            const cached = await get(`cached_${chapter.href}`)
-            if (cached) {
+      limit(async () => {
+        async function retry(idx: number) {
+          const cached = await get(`cached_${chapter.href}`)
+          if (cached) {
+            if (cached.toLowerCase().includes("mất kết nối")) {
+              del(`cached_${chapter.href}`)
+            } else {
               const content = await cleanChapter(cached, qContainer, cleaner)
               onProgress((((index + 1) / chapters.length) * 50) / 100)
               return { title: chapter.name, content }
             }
-
-            const response = await fetch(chapter.href)
-            if (!response.ok) throw response.text()
-
-            const html = await response.text()
-            await set(`cached_${chapter.href}`, html)
-
-            const content = await cleanChapter(html, qContainer, cleaner)
-
-            onProgress((((index + 1) / chapters.length) * 50) / 100)
-
-            return { title: chapter.name, content }
-          },
-          {
-            delay: 1000,
-            onError(err, currentTry) {
-              console.error(
-                `Error: ${err}. Sleep 1s and retry ${currentTry} of 5`
-              )
-
-              return undefined
-            }
           }
-        )
-      )
+
+          const response = await fetch(chapter.href)
+          // if response is too many request wait 30 seconds
+          if (response.status === 429 && idx < 10) {
+            await new Promise((resolve) => setTimeout(resolve, 60_000))
+            return await retry(idx + 1)
+          }
+
+          if (!response.ok) throw response.text()
+
+          const html = await response.text()
+          if (html.toLowerCase().includes("mất kết nối"))
+            throw new Response("", { status: 404 })
+
+          await set(`cached_${chapter.href}`, html)
+
+          const content = await cleanChapter(html, qContainer, cleaner)
+
+          onProgress((((index + 1) / chapters.length) * 50) / 100)
+
+          return { title: chapter.name, content }
+        }
+
+        return await retry(0)
+      })
     )
   )
 
