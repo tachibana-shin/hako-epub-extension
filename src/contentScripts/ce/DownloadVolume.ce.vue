@@ -160,7 +160,12 @@ async function downloadVolume() {
     },
     qContainer,
     propCleaner
-  )
+  ).catch((err) => {
+    console.error(err)
+    toastShadow(`Error generating EPUB ${err}`, { type: "error" })
+
+    throw err
+  })
 
   downloadDone.value = true
   downloadProgress.value = -1
