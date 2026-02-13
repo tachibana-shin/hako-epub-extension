@@ -202,13 +202,13 @@ export async function generateEpub(
         async function retry(idx: number) {
           const cached = await get(`cached_${chapter.href}`)
           if (cached) {
-            if (cached.toLowerCase().includes("mất kết nối")) {
-              del(`cached_${chapter.href}`)
-            } else {
-              const content = await cleanChapter(cached, qContainer, cleaner)
+            const content = await cleanChapter(cached, qContainer, cleaner)
+            if (content !== null) {
               onProgress((((index + 1) / chapters.length) * 50) / 100)
               return { title: chapter.name, content }
             }
+
+            del(`cached_${chapter.href}`)
           }
 
           const response = await fetch(chapter.href)
@@ -221,12 +221,10 @@ export async function generateEpub(
           if (!response.ok) throw response.text()
 
           const html = await response.text()
-          if (html.toLowerCase().includes("mất kết nối"))
-            throw new Response("", { status: 404 })
-
           await set(`cached_${chapter.href}`, html)
 
           const content = await cleanChapter(html, qContainer, cleaner)
+          if (content === null) throw html
 
           onProgress((((index + 1) / chapters.length) * 50) / 100)
 

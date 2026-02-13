@@ -6,8 +6,10 @@ export async function cleanChapter(
   html: string,
   qContainer: string,
   cleaner: ($: CheerioAPI) => void
-): Promise<string> {
+): Promise<string | null> {
   const $ = load(html, { xmlMode: true })
+
+  if ($(qContainer).length === 0) return null
 
   $(".d-none").remove()
   $('[id^="note"]').each((_, el) => {
