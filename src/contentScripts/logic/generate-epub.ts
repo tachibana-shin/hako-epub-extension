@@ -253,21 +253,29 @@ export async function generateEpub(
     }
   ).genEpub()
 
-  const coverImg = await retryAsync(
-    () =>
-      fetch(`${cover}#cors`).then(async (res) =>
-        res.ok
-          ? {
-              buffer: await res.arrayBuffer(),
-              ext: res.headers.get("content-type")?.split("/").at(-1)
-            }
-          : Promise.reject(await res.text())
-      ),
-    { maxTry: 5 }
-  ).catch((error) => {
-    console.error(`Error fetching cover image: ${error}`)
-    return undefined
-  })
+  const coverImg = cover
+    ? await retryAsync(
+      () =>
+        fetch(
+          `${cover}${
+            cover.startsWith(location.origin) || cover.startsWith("/")
+              ? ""
+              : "#cors"
+          }`
+        ).then(async (res) =>
+          res.ok
+            ? {
+                buffer: await res.arrayBuffer(),
+                ext: res.headers.get("content-type")?.split("/").at(-1)
+              }
+            : Promise.reject(await res.text())
+        ),
+      { maxTry: 5 }
+    ).catch((error) => {
+      console.error(`Error fetching cover image: ${error}`)
+      return undefined
+    })
+    : undefined
 
   const cBuffer = await editFilesInEPUB(await buffer.arrayBuffer(), {
     "OEBPS/content.opf": (content) => {

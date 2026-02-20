@@ -10,6 +10,7 @@ The EPub file is the standard you can import it into Calibre and transfer it to 
 - https://sonako.fandom.com
 - https://baka-tsuki.org
 - https://valvrareteam.net
+- https://foxaholic.com
 
 ## Screenshot
 Hako

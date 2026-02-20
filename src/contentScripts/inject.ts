@@ -32,11 +32,14 @@ function bind(config: SiteConfig) {
     }
     if (config.targetQueries?.chapters)
       downloadVolume.setAttribute("q-chapters", config.targetQueries.chapters)
+    if (config.targetQueries?.chaptersReverse)
+      downloadVolume.setAttribute("chapters-reverse", "true")
     if (config.targetQueries?.container)
       downloadVolume.setAttribute("q-container", config.targetQueries.container)
 
     // タイトル
     if (config.title) downloadVolume.setAttribute("title", config.title(h3))
+    if (config.description) downloadVolume.setAttribute("description", config.description())
 
     // 表紙
     const cover = config.extractCover?.(h3)

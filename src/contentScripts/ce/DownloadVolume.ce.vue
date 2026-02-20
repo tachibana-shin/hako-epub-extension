@@ -9,10 +9,12 @@ import XRadialProgress from "./XRadialProgress.ce.vue"
 const {
   target,
   title: propTitle,
+  description: propDescription,
   cover: propCover,
   author: propAuthor,
   qBookTitle = ".series-name",
   qChapters = "ul.list-chapters li > .chapter-name > a",
+  chaptersReverse = "false",
   qContainer = "#chapter-content",
 
   cleaner: propCleaner = (_) => {},
@@ -22,10 +24,12 @@ const {
 } = defineProps<{
   target: string
   title?: string
+  description?: string
   cover?: string
   author?: string
   qBookTitle?: string
   qChapters?: string
+  chaptersReverse?: string
   qContainer?: string
 
   cleaner?: ($: CheerioAPI) => void
@@ -110,7 +114,7 @@ async function downloadVolume() {
       .flat(1)
       .filter(Boolean)
   ]
-  const description = document
+  const description = propDescription ?? document
     .querySelector(".summary-content")
     ?.textContent?.trim()
   let cover =
@@ -139,6 +143,7 @@ async function downloadVolume() {
       }
     }
   )
+  if (chaptersReverse === "true") chapters.reverse()
 
   const options = {
     title,
