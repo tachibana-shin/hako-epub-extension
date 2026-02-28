@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import saveAs from "file-saver"
-import { delMany, get, getMany, setMany } from "idb-keyval"
+import { delMany, getMany, setMany } from "idb-keyval"
 import type { CheerioAPI } from "cheerio"
 import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
@@ -54,13 +54,50 @@ const slug = computed(() => {
     (propTitle ?? targetEl.querySelector(".sect-title")!.textContent.trim())
   )
 })
+const chapters = computed(() => {
+  const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
+    (anchor) => {
+      return {
+        name: anchor.textContent.trim(),
+        href: anchor.getAttribute("href")!
+      }
+    }
+  )
+  if (chaptersReverse === "true") chapters.reverse()
+
+  return chapters
+})
+
+const chaptersHash = ref("")
+watch(
+  chapters,
+  async (newChapters) => {
+    const hashBuffer = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(JSON.stringify(newChapters))
+    )
+    chaptersHash.value = Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+  },
+  { immediate: true }
+)
+
+enum DownloadState {
+  Done,
+  Update,
+  None
+}
 
 const downloadProgress = ref(-1)
-const downloadDone = ref(false)
+const downloadDone = ref<DownloadState>(DownloadState.None)
 
 watchEffect(() => {
-  get(slug.value).then((exists) => {
-    if (exists) downloadDone.value = true
+  getMany([slug.value, `${slug.value}_hash`]).then(([metadata, hash]) => {
+    if (metadata) {
+      downloadDone.value =
+        hash === chaptersHash.value ? DownloadState.Done : DownloadState.Update
+    }
   })
 })
 
@@ -114,9 +151,9 @@ async function downloadVolume() {
       .flat(1)
       .filter(Boolean)
   ]
-  const description = propDescription ?? document
-    .querySelector(".summary-content")
-    ?.textContent?.trim()
+  const description =
+    propDescription ??
+    document.querySelector(".summary-content")?.textContent?.trim()
   let cover =
     propCover ??
     targetEl
@@ -135,16 +172,6 @@ async function downloadVolume() {
       targetEl
     ) + 1
 
-  const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
-    (anchor) => {
-      return {
-        name: anchor.textContent.trim(),
-        href: anchor.getAttribute("href")!
-      }
-    }
-  )
-  if (chaptersReverse === "true") chapters.reverse()
-
   const options = {
     title,
     bookTitle,
@@ -155,7 +182,7 @@ async function downloadVolume() {
     description,
     cover,
     chapterNumber,
-    chapters
+    chapters: chapters.value
   }
   const { buffer } = await generateEpub(
     options,
@@ -172,11 +199,12 @@ async function downloadVolume() {
     throw err
   })
 
-  downloadDone.value = true
+  downloadDone.value = DownloadState.Done
   downloadProgress.value = -1
 
   setMany([
     [slug.value, JSON.stringify(options)],
+    [`${slug.value}_hash`, chaptersHash.value],
     [`${slug.value}_file`, buffer]
   ])
 
@@ -202,18 +230,15 @@ function confirmDelete() {
   // eslint-disable-next-line no-alert
   if (!confirm(`Are you sure delete cache this?`)) return
 
-  const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
-    (anchor) => anchor.getAttribute("href")!
-  )
-
   delMany([
     slug.value,
+    `${slug.value}_hash`,
     `${slug.value}_file`,
 
-    ...chapters.map((chapter) => `cached_${chapter}`)
+    ...chapters.value.map((chapter) => `cached_${chapter.href}`)
   ])
 
-  downloadDone.value = false
+  downloadDone.value = DownloadState.None
 }
 </script>
 
@@ -221,14 +246,15 @@ function confirmDelete() {
   <button
     v-if="downloadProgress === -1"
     class="btn ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
-    @click.prevent.stop="!downloadDone ? downloadVolume() : downloadD()"
+    @click.prevent.stop="downloadDone !== DownloadState.None ? downloadVolume() : downloadD()"
     @contextmenu.prevent.stop="confirmDelete"
   >
-    <i-hugeicons-apple-finder v-if="downloadDone" />
+    <i-hugeicons-apple-finder v-if="downloadDone === DownloadState.Done" />
+    <i-hugeicons-system-update-02 v-else-if="downloadDone === DownloadState.Update" />
     <i-hugeicons-download-04 v-else />
   </button>
   <XRadialProgress
-    v-else-if="!downloadDone"
+    v-else-if="downloadDone !== DownloadState.Done"
     class="text-12px my--2"
     :value="Math.round(downloadProgress * 100)"
     :size="30"
