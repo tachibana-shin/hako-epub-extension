@@ -246,7 +246,7 @@ function confirmDelete() {
   <button
     v-if="downloadProgress === -1"
     class="btn ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
-    @click.prevent.stop="downloadDone !== DownloadState.None ? downloadVolume() : downloadD()"
+    @click.prevent.stop="downloadDone !== DownloadState.Done ? downloadVolume() : downloadD()"
     @contextmenu.prevent.stop="confirmDelete"
   >
     <i-hugeicons-apple-finder v-if="downloadDone === DownloadState.Done" />
