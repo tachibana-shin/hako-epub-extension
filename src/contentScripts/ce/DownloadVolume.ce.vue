@@ -2,6 +2,7 @@
 import saveAs from "file-saver"
 import { delMany, getMany, setMany } from "idb-keyval"
 import type { CheerioAPI } from "cheerio"
+import type { FetcherOptions } from "../registry"
 import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
@@ -18,6 +19,8 @@ const {
   qContainer = "#chapter-content",
 
   cleaner: propCleaner = (_) => {},
+  getChapterTitle = (anchor) => anchor.textContent.trim(),
+  fetcherOptions: propFetcherOptions = {},
 
   publisher = "hako.vn",
   lang = "vi"
@@ -33,6 +36,8 @@ const {
   qContainer?: string
 
   cleaner?: ($: CheerioAPI) => void
+  getChapterTitle?: (anchor: HTMLElement) => string
+  fetcherOptions?: FetcherOptions
 
   publisher?: string
   lang?: string
@@ -58,7 +63,7 @@ const chapters = computed(() => {
   const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
     (anchor) => {
       return {
-        name: anchor.textContent.trim(),
+        name: getChapterTitle(anchor),
         href: anchor.getAttribute("href")!
       }
     }
@@ -191,7 +196,8 @@ async function downloadVolume() {
       downloadProgress.value = progress
     },
     qContainer,
-    propCleaner
+    propCleaner,
+    propFetcherOptions
   ).catch((err) => {
     console.error(err)
     toastShadow(`Error generating EPUB ${err}`, { type: "error" })

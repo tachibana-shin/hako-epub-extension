@@ -1,5 +1,12 @@
 import type { CheerioAPI } from "cheerio"
 
+export interface FetcherOptions {
+  concurrency?: number
+  delay?: number
+  retry?: number
+  // time sleep after download one chapter
+  sleep?: number
+}
 export interface SiteConfig {
   domains: string[]
   findAuthor?: () => string | undefined
@@ -16,6 +23,8 @@ export interface SiteConfig {
   title?: (h3: HTMLElement) => string
   description?: () => string
   cleaner?: ($: CheerioAPI) => void
+  getChapterTitle?: (anchor: HTMLElement) => string
+  fetcherOptions?: FetcherOptions
   lazyDom?: boolean
 }
 
@@ -183,7 +192,7 @@ const registry: SiteConfig[] = [
         .filter((a) => a.getAttribute("href")?.includes("author="))
         .map((a) => a.textContent.trim())
         .join(", "),
-    findBlocks: `.space-y-4 > [data-orientation="vertical"] > h3`,
+    findBlocks: `.space-y-4 > [data-orientation="vertical"] > h3 > button`,
     findTarget: (h3) =>
       h3
         .closest("div[data-orientation='vertical']")!
@@ -199,7 +208,7 @@ const registry: SiteConfig[] = [
     publisher: "novest.me",
     targetQueries: {
       bookTitle: "h1",
-      chapters: "li > a",
+      chapters: ".grid > a",
       container: ".relative"
     },
     title: (h3) => h3.querySelector("h3")!.textContent.trim(),
@@ -207,10 +216,12 @@ const registry: SiteConfig[] = [
       document
         .querySelector(".prose > .whitespace-pre-line")
         ?.textContent.trim() ?? "",
-    cleaner: ($) =>
-      $(
-        '.foxaholic-bidgear-before-content-1x1 > div[id^="bg-"], .foxaholic-bidgear-before-content-1x1 > div[id^="bg-"] ~ h1, .foxaholic-bidgear-before-content-1x1 > div[id^="bg-"] ~ h1 + h2'
-      ).remove()
+    getChapterTitle: (anchor: HTMLElement) => anchor.querySelector(".text-sm")?.textContent.trim() ?? anchor.textContent.trim(),
+    lazyDom: true,
+    fetcherOptions: {
+      concurrency: 1,
+      sleep: 5000
+    }
   }
 ]
 

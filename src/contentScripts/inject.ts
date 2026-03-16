@@ -50,6 +50,10 @@ function bind(config: SiteConfig) {
 
     if (config.cleaner)
       (downloadVolume as unknown as any).cleaner = config.cleaner
+    if (config.getChapterTitle)
+      (downloadVolume as unknown as any).getChapterTitle = config.getChapterTitle
+    if (config.fetcherOptions)
+      (downloadVolume as unknown as any).fetcherOptions = config.fetcherOptions
 
     h3.appendChild(downloadVolume)
   })

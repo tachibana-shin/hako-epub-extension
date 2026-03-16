@@ -5,6 +5,7 @@ import { EPub } from "epub-gen-memory/bundle"
 import type { CheerioAPI } from "cheerio"
 import { load } from "cheerio"
 import { del, get, set } from "idb-keyval"
+import type { FetcherOptions } from "../registry"
 import { editFilesInEPUB } from "./edit-files-in-epub"
 import { cleanChapter } from "./clean-chapter"
 import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
@@ -179,7 +180,8 @@ export async function generateEpub(
   options: OptionsGenerateEpub,
   onProgress: (progress: number) => void,
   qContainer: string,
-  cleaner: ($: CheerioAPI) => void
+  cleaner: ($: CheerioAPI) => void,
+  fetcherOptions: FetcherOptions
 ): Promise<Uint8Array> {
   const {
     title,
@@ -194,7 +196,7 @@ export async function generateEpub(
     chapters
   } = options
 
-  const limit = pLimit(5)
+  const limit = pLimit(fetcherOptions.concurrency ?? 5)
 
   const results: Content = await Promise.all(
     chapters.map((chapter, index) =>
@@ -213,8 +215,8 @@ export async function generateEpub(
 
           const response = await fetch(chapter.href)
           // if response is too many request wait 30 seconds
-          if (response.status === 429 && idx < 10) {
-            await new Promise((resolve) => setTimeout(resolve, 60_000))
+          if (response.status === 429 && idx < (fetcherOptions.retry ?? 10)) {
+            await new Promise((resolve) => setTimeout(resolve, fetcherOptions.delay ?? 60_000))
             return await retry(idx + 1)
           }
 
@@ -227,6 +229,10 @@ export async function generateEpub(
           if (content === null) throw html
 
           onProgress((((index + 1) / chapters.length) * 50) / 100)
+
+          if (fetcherOptions.sleep) {
+            await new Promise((resolve) => setTimeout(resolve, fetcherOptions.sleep))
+          }
 
           return { title: chapter.name, content }
         }
@@ -244,8 +250,8 @@ export async function generateEpub(
       description,
       tocTitle: "Mục lục",
       lang,
-      retryTimes: 5_000,
-      batchSize: 5
+      retryTimes: fetcherOptions.retry ?? 5_000,
+      batchSize: fetcherOptions.concurrency ?? 5
     },
     results,
     (progress) => {
@@ -257,10 +263,9 @@ export async function generateEpub(
     ? await retryAsync(
       () =>
         fetch(
-          `${cover}${
-            cover.startsWith(location.origin) || cover.startsWith("/")
-              ? ""
-              : "#cors"
+          `${cover}${cover.startsWith(location.origin) || cover.startsWith("/")
+            ? ""
+            : "#cors"
           }`
         ).then(async (res) =>
           res.ok
@@ -270,7 +275,7 @@ export async function generateEpub(
               }
             : Promise.reject(await res.text())
         ),
-      { maxTry: 5 }
+      { maxTry: fetcherOptions.retry ?? 5 }
     ).catch((error) => {
       console.error(`Error fetching cover image: ${error}`)
       return undefined
@@ -332,7 +337,6 @@ ${coverImg ? `<item id="cover.${coverImg.ext}" href="cover.${coverImg.ext}" medi
     "OEBPS/fonts/UTM_Candombe.ttf": () => UTMCandomebeTTF,
     "OEBPS/fonts/UTM_LinotypeZapfinoKT.ttf": () => UTMLinotypeZapfinoKTTTF,
     "OEBPS/style.css": (css) => `${css}
-/* @import url("https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,700;1,400;1,700&display=swap");*/
 /* Styles for Ebook */
 body {
 font-family: "Literata", serif;
