@@ -37,7 +37,7 @@
     "test:e2e": "playwright test",
     "postinstall": "simple-git-hooks",
     "typecheck": "tsc --noEmit",
-    "release": "bumpp package.json --commit --push --tag"
+    "release": "bun scripts/update-readme.ts && git add README.md && bumpp package.json --commit --push --tag"
   },
   "dependencies": {
     "@ameinhardt/unocss-preset-daisy": "^1.1.8",

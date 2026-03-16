@@ -4,13 +4,19 @@ This browser extension allows you to download EPub from websites
 The EPub file is the standard you can import it into Calibre and transfer it to your Kindle for reading. I have a Kindle PaperWhite 3 so I developed this extension. I also have 1 plugin for KOReader that allows me to read manga online directly on my Kindle without a computer on my GitHub  🍃
 
 ## List website support
+<!-- @list website support -->
 - https://hako.vn
+- https://hako.vip
 - https://docln.net
 - https://docln.sbs
 - https://sonako.fandom.com
 - https://baka-tsuki.org
+- https://www.baka-tsuki.org
 - https://valvrareteam.net
+- https://www.foxaholic.com
 - https://foxaholic.com
+- https://novest.me
+<!-- @end -->
 
 ## Screenshot
 Hako
