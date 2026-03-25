@@ -19,6 +19,7 @@ const {
   qContainer = "#chapter-content",
 
   cleaner: propCleaner = (_) => {},
+  transformContainer: propTransformContainer = ($) => $,
   getChapterTitle = (anchor) => anchor.textContent.trim(),
   fetcherOptions: propFetcherOptions = {},
 
@@ -36,6 +37,7 @@ const {
   qContainer?: string
 
   cleaner?: ($: CheerioAPI) => void
+  transformContainer?: ($: CheerioAPI) => CheerioAPI
   getChapterTitle?: (anchor: HTMLElement) => string
   fetcherOptions?: FetcherOptions
 
@@ -60,7 +62,7 @@ const slug = computed(() => {
   )
 })
 const chapters = computed(() => {
-  const chapters = Array.from(targetEl.querySelectorAll(qChapters)).map(
+  const chapters = Array.from(targetEl.querySelectorAll<HTMLElement>(qChapters)).map(
     (anchor) => {
       return {
         name: getChapterTitle(anchor),
@@ -197,6 +199,7 @@ async function downloadVolume() {
     },
     qContainer,
     propCleaner,
+    propTransformContainer,
     propFetcherOptions
   ).catch((err) => {
     console.error(err)

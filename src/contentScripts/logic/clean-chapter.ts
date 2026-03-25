@@ -5,9 +5,10 @@ import { minify } from "html-minifier-terser"
 export async function cleanChapter(
   html: string,
   qContainer: string,
-  cleaner: ($: CheerioAPI) => void
+  cleaner: ($: CheerioAPI) => void,
+  transformContainer: ($: CheerioAPI) => CheerioAPI
 ): Promise<string | null> {
-  const $ = load(html, { xmlMode: true })
+  const $ = transformContainer(load(html, { xmlMode: true }))
 
   if ($(qContainer).length === 0) return null
 

@@ -181,6 +181,7 @@ export async function generateEpub(
   onProgress: (progress: number) => void,
   qContainer: string,
   cleaner: ($: CheerioAPI) => void,
+  transformContainer: ($: CheerioAPI) => CheerioAPI,
   fetcherOptions: FetcherOptions
 ): Promise<Uint8Array> {
   const {
@@ -204,7 +205,7 @@ export async function generateEpub(
         async function retry(idx: number) {
           const cached = await get(`cached_${chapter.href}`)
           if (cached) {
-            const content = await cleanChapter(cached, qContainer, cleaner)
+            const content = await cleanChapter(cached, qContainer, cleaner, transformContainer)
             if (content !== null) {
               onProgress((((index + 1) / chapters.length) * 50) / 100)
               return { title: chapter.name, content }
@@ -216,7 +217,7 @@ export async function generateEpub(
           const response = await fetch(chapter.href)
           // if response is too many request wait 30 seconds
           if (response.status === 429 && idx < (fetcherOptions.retry ?? 10)) {
-            await new Promise((resolve) => setTimeout(resolve, fetcherOptions.delay ?? 60_000))
+            await new Promise((resolve) => setTimeout(resolve, fetcherOptions.delayError429 ?? 60_000))
             return await retry(idx + 1)
           }
 
@@ -225,7 +226,7 @@ export async function generateEpub(
           const html = await response.text()
           await set(`cached_${chapter.href}`, html)
 
-          const content = await cleanChapter(html, qContainer, cleaner)
+          const content = await cleanChapter(html, qContainer, cleaner, transformContainer)
           if (content === null) throw html
 
           onProgress((((index + 1) / chapters.length) * 50) / 100)

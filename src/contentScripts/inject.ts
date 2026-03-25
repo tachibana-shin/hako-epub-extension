@@ -50,6 +50,8 @@ function bind(config: SiteConfig) {
 
     if (config.cleaner)
       (downloadVolume as unknown as any).cleaner = config.cleaner
+    if (config.transformContainer)
+      (downloadVolume as unknown as any).transformContainer = config.transformContainer
     if (config.getChapterTitle)
       (downloadVolume as unknown as any).getChapterTitle = config.getChapterTitle
     if (config.fetcherOptions)

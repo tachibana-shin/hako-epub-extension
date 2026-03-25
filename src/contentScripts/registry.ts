@@ -23,6 +23,7 @@ export interface SiteConfig {
   title?: (h3: HTMLElement) => string
   description?: () => string
   cleaner?: ($: CheerioAPI) => void
+  transformContainer?: ($: CheerioAPI) => CheerioAPI
   getChapterTitle?: (anchor: HTMLElement) => string
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean
