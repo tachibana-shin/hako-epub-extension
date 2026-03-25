@@ -1,7 +1,9 @@
 # Hako EPub Extension
 
-This browser extension allows you to download EPub from websites
-The EPub file is the standard you can import it into Calibre and transfer it to your Kindle for reading. I have a Kindle PaperWhite 3 so I developed this extension. I also have 1 plugin for KOReader that allows me to read manga online directly on my Kindle without a computer on my GitHub  🍃
+A browser extension that allows you to download EPub files directly from light novel websites. The generated EPub files follow standard formats, making them fully compatible with **Calibre** and easy to transfer to your **Kindle** (developed and tested on Kindle PaperWhite 3).
+
+> [!TIP]
+> I also developed a [**KOReader plugin**](https://github.com/tachibana-shin/rakuyomi) that allows you to read manga online directly on your Kindle without needing a computer!
 
 ## List website support
 <!-- @list website support -->
@@ -17,6 +19,38 @@ The EPub file is the standard you can import it into Calibre and transfer it to 
 - https://foxaholic.com
 - https://novest.me
 <!-- @end -->
+
+## Sponsor ☕
+If you find this project useful please support me through:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P3MM3H6)
+| [<img src="https://user-images.githubusercontent.com/45375496/209764740-d202626d-4acd-4517-a5dc-e94993eeeb0a.png" width="80" />](https://me.momo.vn/tachibshin) | [<img src="https://user-images.githubusercontent.com/45375496/210380009-53fcdbb0-f6a4-4e7f-bfc9-e59938151805.png" width="80" />](https://anime-vsub.github.io/about/sponsors) |
+| :------------------: | :--------------------: |
+| [Momo](https://me.momo.vn/tachibshin) | [Timo or Bank](https://anime-vsub.github.io/about/sponsors) |
+
+## 🚀 Installation Guide
+
+### 1. Official Stores (Recommended for convenience)
+You can find the extension on the following stores:
+- [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/hako-epub/jnfmghkcmckpobdomljpgkhegeklalko)
+- [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/hako-epub/)
+
+⚠️ **Note:** Due to the store review process, versions available on the stores are often **outdated**. For the latest features and bug fixes, please follow the **Sideload** instructions below to get the latest version from GitHub.
+
+### 2. Sideloading (Get the latest version from GitHub)
+
+#### For Chrome / Edge / Brave (Chromium-based)
+1. Download the source code (or `.zip` file) from the [Releases](https://github.com/tachibana-shin/hako-epub-extension/releases) section and extract it.
+2. Open your browser and navigate to `chrome://extensions/` (or `edge://extensions/`).
+3. Enable **Developer mode** in the top right corner.
+4. Click **Load unpacked**.
+5. Select the folder where you extracted the extension.
+
+#### For Firefox
+1. Navigate to `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on...**.
+3. Select the `manifest.json` file from your extracted folder.
+   *(Note: Temporary add-ons in Firefox are removed when the browser is closed).*
 
 ## Screenshot
 Hako
