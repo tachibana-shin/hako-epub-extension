@@ -125,7 +125,7 @@ const registry: SiteConfig[] = [
 
       // Merge decoded HTML
       const html = renderNotes(decodedList.join(""))
-      container.replaceWith($(`<div>${html}</div>`))
+      container.replaceWith($(`${html.trim()}`))
 
       return $
     }
