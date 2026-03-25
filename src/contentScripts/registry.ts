@@ -31,7 +31,7 @@ export interface SiteConfig {
 
 const registry: SiteConfig[] = [
   {
-    domains: ["hako.vn", "hako.vip", "docln.net", "docln.sbs"],
+    domains: ["hako.vn", "ln.hako.vn", "hako.vip", "docln.net", "docln.sbs"],
     findBlocks: ".volume-list:not(.disabled) > header > span.mobile-icon",
     findTarget: (h3) => h3.closest(".volume-list")!,
     fetcherOptions: {

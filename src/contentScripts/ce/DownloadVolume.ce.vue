@@ -61,7 +61,7 @@ const slug = computed(() => {
     (propTitle ?? targetEl.querySelector(".sect-title")!.textContent.trim())
   )
 })
-const chapters = computed(() => {
+function getChapters() {
   const chapters = Array.from(targetEl.querySelectorAll<HTMLElement>(qChapters)).map(
     (anchor) => {
       return {
@@ -73,11 +73,11 @@ const chapters = computed(() => {
   if (chaptersReverse === "true") chapters.reverse()
 
   return chapters
-})
+}
 
 const chaptersHash = ref("")
 watch(
-  chapters,
+  () => getChapters(),
   async (newChapters) => {
     const hashBuffer = await crypto.subtle.digest(
       "SHA-256",
@@ -189,7 +189,7 @@ async function downloadVolume() {
     description,
     cover,
     chapterNumber,
-    chapters: chapters.value
+    chapters: getChapters()
   }
   const { buffer } = await generateEpub(
     options,
@@ -244,7 +244,7 @@ function confirmDelete() {
     `${slug.value}_hash`,
     `${slug.value}_file`,
 
-    ...chapters.value.map((chapter) => `cached_${chapter.href}`)
+    ...getChapters().map((chapter) => `cached_${chapter.href}`)
   ])
 
   downloadDone.value = DownloadState.None
