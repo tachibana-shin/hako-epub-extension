@@ -1,7 +1,7 @@
 {
   "name": "hako-epub",
   "displayName": "Hako EPub",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "private": true,
   "description": "Tiện ích tải EPub trên website",
   "scripts": {
