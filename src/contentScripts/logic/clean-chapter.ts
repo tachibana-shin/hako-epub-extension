@@ -41,7 +41,8 @@ export async function cleanChapter(
     removeRedundantAttributes: true,
     removeEmptyAttributes: true,
     minifyCSS: true,
-    minifyJS: true
+    minifyJS: true,
+    continueOnParseError: true,
   })
 
   const notes = $('[id^="note"]')
