@@ -8,7 +8,9 @@ export async function cleanChapter(
   cleaner: ($: CheerioAPI) => void,
   transformContainer: ($: CheerioAPI) => CheerioAPI
 ): Promise<string | null> {
-  const $ = transformContainer(load(html, { xmlMode: true }))
+  const $ = transformContainer(
+    load(html, { xml: { xmlMode: true, selfClosingTags: false } })
+  )
 
   if ($(qContainer).length === 0) return null
 
@@ -42,7 +44,7 @@ export async function cleanChapter(
     removeEmptyAttributes: true,
     minifyCSS: true,
     minifyJS: true,
-    continueOnParseError: true,
+    continueOnParseError: true
   })
 
   const notes = $('[id^="note"]')

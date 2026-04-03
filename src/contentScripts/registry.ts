@@ -83,16 +83,6 @@ const registry: SiteConfig[] = [
         return bytesToUtf8(decodeBase64ToBytes(prepared))
       }
 
-      // Replace [noteX] → tooltip elements
-      function renderNotes(html: string) {
-        return html.replace(
-          /\[note(\d+)\]/gi,
-          (_, id) =>
-            `<span id="anchor-note${id}" class="note-icon none-print inline note-tooltip" data-tooltip-content="#note${id} .note-content" data-note-id="note${id}"><i class="fas fa-sticky-note"></i></span>` +
-            `<a id="anchor-note${id}" class="inline-print none" href="#note${id}">[note]</a>`
-        )
-      }
-
       const container = $("#chapter-c-protected")
       if (!container.length) return $
 
@@ -124,7 +114,7 @@ const registry: SiteConfig[] = [
       })
 
       // Merge decoded HTML
-      const html = renderNotes(decodedList.join(""))
+      const html = decodedList.join("")
       container.replaceWith($(`${html.trim()}`))
 
       return $

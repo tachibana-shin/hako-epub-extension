@@ -45,7 +45,7 @@
     "@lesjoursfr/html-to-epub": "^4.5.2",
     "@unocss/preset-wind4": "^66.5.1",
     "@vueuse/integrations": "^13.9.0",
-    "cheerio": "^1.1.2",
+    "cheerio": "^1.2.0",
     "daisyui": "^5.1.12",
     "epub-gen-memory": "^1.1.2",
     "file-saver": "^2.0.5",
