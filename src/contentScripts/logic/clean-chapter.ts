@@ -6,10 +6,11 @@ export async function cleanChapter(
   html: string,
   qContainer: string,
   cleaner: ($: CheerioAPI) => void,
-  transformContainer: ($: CheerioAPI) => CheerioAPI
+  transformContainer: ($: CheerioAPI) => CheerioAPI,
+  preParse: (html: string) => string,
 ): Promise<string | null> {
   const $ = transformContainer(
-    load(html, { xml: { xmlMode: true, selfClosingTags: false } })
+    load(preParse(html), { xml: { xmlMode: true, selfClosingTags: false } })
   )
 
   if ($(qContainer).length === 0) return null

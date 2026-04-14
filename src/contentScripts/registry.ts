@@ -24,6 +24,7 @@ export interface SiteConfig {
   description?: () => string
   cleaner?: ($: CheerioAPI) => void
   transformContainer?: ($: CheerioAPI) => CheerioAPI
+  preParse?: false | ((html: string) => string)
   getChapterTitle?: (anchor: HTMLElement) => string
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean
@@ -39,6 +40,7 @@ const registry: SiteConfig[] = [
       sleep: 3_000,
       delayError429: 15_000
     },
+    preParse: false,
     transformContainer($) {
       // Decode utilities -----------------------------------------------------------
 
@@ -108,7 +110,7 @@ const registry: SiteConfig[] = [
       })
 
       // Decode all chunks
-      const decodedList = chunks.map(item => {
+      const decodedList = chunks.map((item) => {
         const body = item.slice(4) // strip the "0001" prefix
         return decodeChunk(body, strategy, key)
       })
@@ -302,7 +304,9 @@ const registry: SiteConfig[] = [
       document
         .querySelector(".prose > .whitespace-pre-line")
         ?.textContent.trim() ?? "",
-    getChapterTitle: (anchor: HTMLElement) => anchor.querySelector(".text-sm")?.textContent.trim() ?? anchor.textContent.trim(),
+    getChapterTitle: (anchor: HTMLElement) =>
+      anchor.querySelector(".text-sm")?.textContent.trim() ??
+      anchor.textContent.trim(),
     lazyDom: true,
     fetcherOptions: {
       concurrency: 1,

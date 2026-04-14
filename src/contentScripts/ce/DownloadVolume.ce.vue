@@ -20,6 +20,7 @@ const {
 
   cleaner: propCleaner = (_) => {},
   transformContainer: propTransformContainer = ($) => $,
+  preParse: propPreParse = (html) => html,
   getChapterTitle = (anchor) => anchor.textContent.trim(),
   fetcherOptions: propFetcherOptions = {},
 
@@ -38,6 +39,7 @@ const {
 
   cleaner?: ($: CheerioAPI) => void
   transformContainer?: ($: CheerioAPI) => CheerioAPI
+  preParse?: (html: string) => string
   getChapterTitle?: (anchor: HTMLElement) => string
   fetcherOptions?: FetcherOptions
 
@@ -62,14 +64,14 @@ const slug = computed(() => {
   )
 })
 function getChapters() {
-  const chapters = Array.from(targetEl.querySelectorAll<HTMLElement>(qChapters)).map(
-    (anchor) => {
-      return {
-        name: getChapterTitle(anchor),
-        href: anchor.getAttribute("href")!
-      }
+  const chapters = Array.from(
+    targetEl.querySelectorAll<HTMLElement>(qChapters)
+  ).map((anchor) => {
+    return {
+      name: getChapterTitle(anchor),
+      href: anchor.getAttribute("href")!
     }
-  )
+  })
   if (chaptersReverse === "true") chapters.reverse()
 
   return chapters
@@ -200,7 +202,8 @@ async function downloadVolume() {
     qContainer,
     propCleaner,
     propTransformContainer,
-    propFetcherOptions
+    propFetcherOptions,
+    propPreParse
   ).catch((err) => {
     console.error(err)
     toastShadow(`Error generating EPUB ${err}`, { type: "error" })
@@ -255,11 +258,15 @@ function confirmDelete() {
   <button
     v-if="downloadProgress === -1"
     class="btn ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
-    @click.prevent.stop="downloadDone !== DownloadState.Done ? downloadVolume() : downloadD()"
+    @click.prevent.stop="
+      downloadDone !== DownloadState.Done ? downloadVolume() : downloadD()
+    "
     @contextmenu.prevent.stop="confirmDelete"
   >
     <i-hugeicons-apple-finder v-if="downloadDone === DownloadState.Done" />
-    <i-hugeicons-system-update-02 v-else-if="downloadDone === DownloadState.Update" />
+    <i-hugeicons-system-update-02
+      v-else-if="downloadDone === DownloadState.Update"
+    />
     <i-hugeicons-download-04 v-else />
   </button>
   <XRadialProgress

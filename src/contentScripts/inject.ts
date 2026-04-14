@@ -52,6 +52,13 @@ function bind(config: SiteConfig) {
       (downloadVolume as unknown as any).cleaner = config.cleaner
     if (config.transformContainer)
       (downloadVolume as unknown as any).transformContainer = config.transformContainer
+      ;
+    (downloadVolume as unknown as any).preParse = config.preParse ?? ((html: string) => {
+      const wrap = document.createElement("div")
+      wrap.innerHTML = html
+
+      return wrap.innerHTML
+    })
     if (config.getChapterTitle)
       (downloadVolume as unknown as any).getChapterTitle = config.getChapterTitle
     if (config.fetcherOptions)
