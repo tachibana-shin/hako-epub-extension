@@ -134,9 +134,12 @@ const registry: SiteConfig[] = [
         .replace("[]", "")
     },
     findBlocks:
-      "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), h3:has(+ figure + table), h3:has(+ figure + * + table)",
+      "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), h3:has(+ figure + table), h3:has(+ figure + * + table)" +
+      ", .wds-tabber > .wds-tab__content > h3:has(+ .volume)",
     findTarget: (h3) => {
       let ul = h3.nextElementSibling
+
+      if (ul?.classList.contains("volume")) return ul as HTMLElement
 
       if (ul && ul.tagName === "FIGURE") {
         ul = ul.nextElementSibling
@@ -154,6 +157,12 @@ const registry: SiteConfig[] = [
       // 表紙画像の抽出
       const ul = h3.nextElementSibling
       if (ul && ul.tagName === "FIGURE") {
+        return ul
+          .querySelector("img")
+          ?.getAttribute("data-src")
+          ?.split("/revision/")[0]
+      }
+      if (ul && ul.classList.contains("volume")) {
         return ul
           .querySelector("img")
           ?.getAttribute("data-src")
