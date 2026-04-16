@@ -6,40 +6,37 @@ import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
 
-const {
-  target,
-  config: {
-    lang,
-    targetQueries: {
-      bookTitle: qBookTitle = ".series-name",
-      chapters: qChapters = "ul.list-chapters li > .chapter-name > a",
-      chaptersReverse = false,
-      container: qContainer = "#chapter-content"
-    } = {},
-    cleaner: propCleaner = (_) => {},
-    transformContainer: propTransformContainer = ($) => $,
-    preParse: propPreParse = (html: string) => {
-      const wrap = document.createElement("div")
-      wrap.innerHTML = html
-
-      return wrap.innerHTML
-    },
-    getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
-    fetcherOptions: propFetcherOptions = {},
-
-    publisher,
-    title: configTitle,
-    description: configDescription,
-    extractCover: configExtractCover,
-    findAuthor: configFindAuthor,
-    findTags: configFindTags
-  },
-  source
-} = defineProps<{
+const { target, config, source } = defineProps<{
   target: string
   config: SiteConfig
   source: HTMLElement
 }>()
+const {
+  lang,
+  targetQueries: {
+    bookTitle: qBookTitle = ".series-name",
+    chapters: qChapters = "ul.list-chapters li > .chapter-name > a",
+    chaptersReverse = false,
+    container: qContainer = "#chapter-content"
+  } = {},
+  cleaner: propCleaner = (_) => {},
+  transformContainer: propTransformContainer = ($) => $,
+  preParse: propPreParse = (html: string) => {
+    const wrap = document.createElement("div")
+    wrap.innerHTML = html
+
+    return wrap.innerHTML
+  },
+  getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
+  fetcherOptions: propFetcherOptions = {},
+
+  publisher,
+  title: configTitle,
+  description: configDescription,
+  extractCover: configExtractCover,
+  findAuthor: configFindAuthor,
+  findTags: configFindTags
+} = config
 
 const targetEl = document.querySelector(`[v-id="${target}"]`)!
 if (!targetEl) throw new Error(`Target v-id='${target}' not found`)
