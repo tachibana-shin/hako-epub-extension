@@ -206,7 +206,13 @@ export async function generateEpub(
         async function retry(idx: number) {
           const cached = await get(`cached_${chapter.href}`)
           if (cached) {
-            const content = await cleanChapter(cached, qContainer, cleaner, transformContainer, preParse)
+            const content = await cleanChapter(
+              cached,
+              qContainer,
+              cleaner,
+              transformContainer,
+              preParse
+            )
             if (content !== null) {
               onProgress((((index + 1) / chapters.length) * 50) / 100)
               return { title: chapter.name, content }
@@ -218,7 +224,9 @@ export async function generateEpub(
           const response = await fetch(chapter.href)
           // if response is too many request wait 30 seconds
           if (response.status === 429 && idx < (fetcherOptions.retry ?? 10)) {
-            await new Promise((resolve) => setTimeout(resolve, fetcherOptions.delayError429 ?? 60_000))
+            await new Promise((resolve) =>
+              setTimeout(resolve, fetcherOptions.delayError429 ?? 60_000)
+            )
             return await retry(idx + 1)
           }
 
@@ -227,13 +235,21 @@ export async function generateEpub(
           const html = await response.text()
           await set(`cached_${chapter.href}`, html)
 
-          const content = await cleanChapter(html, qContainer, cleaner, transformContainer, preParse)
+          const content = await cleanChapter(
+            html,
+            qContainer,
+            cleaner,
+            transformContainer,
+            preParse
+          )
           if (content === null) throw html
 
           onProgress((((index + 1) / chapters.length) * 50) / 100)
 
           if (fetcherOptions.sleep) {
-            await new Promise((resolve) => setTimeout(resolve, fetcherOptions.sleep))
+            await new Promise((resolve) =>
+              setTimeout(resolve, fetcherOptions.sleep)
+            )
           }
 
           return { title: chapter.name, content }
@@ -265,9 +281,10 @@ export async function generateEpub(
     ? await retryAsync(
       () =>
         fetch(
-          `${cover}${cover.startsWith(location.origin) || cover.startsWith("/")
-            ? ""
-            : "#cors"
+          `${cover}${
+            cover.startsWith(location.origin) || cover.startsWith("/")
+              ? ""
+              : "#cors"
           }`
         ).then(async (res) =>
           res.ok
@@ -294,14 +311,14 @@ export async function generateEpub(
 ${coverImg ? `<meta name="cover" content="cover.${coverImg.ext}"/>` : ""}
 ${tags.map((name) => `<dc:subject>${name}</dc:subject>`).join("\n")}
     `).appendTo($("metadata"))
-      $(`
+      if (coverImg) {
+        $(`
 <item href="titlepage.xhtml" id="titlepage" media-type="application/xhtml+xml"/>
-${coverImg ? `<item id="cover.${coverImg.ext}" href="cover.${coverImg.ext}" media-type="image/${coverImg.ext}" properties="cover-image"/>` : ""}
+<item id="cover.${coverImg.ext}" href="cover.${coverImg.ext}" media-type="image/${coverImg.ext}" properties="cover-image"/>
     `).prependTo($("manifest"))
-      $('<itemref idref="titlepage">').prependTo($("spine"))
-      $(`
-<reference href="titlepage.xhtml" title="Cover" type="cover"/>
-    `).appendTo($("guide"))
+        $('<itemref idref="titlepage">').prependTo($("spine"))
+        $(`<reference href="titlepage.xhtml" title="Cover" type="cover"/>`).appendTo($("guide"))
+      }
 
       return $.html()
     },
