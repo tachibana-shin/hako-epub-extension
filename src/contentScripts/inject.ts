@@ -53,7 +53,7 @@ function bind(config: SiteConfig) {
     if (config.transformContainer)
       (downloadVolume as unknown as any).transformContainer = config.transformContainer
       ;
-    (downloadVolume as unknown as any).preParse = config.preParse ?? ((html: string) => {
+    (downloadVolume as unknown as any).preParse = config.preParse || ((html: string) => {
       const wrap = document.createElement("div")
       wrap.innerHTML = html
 
