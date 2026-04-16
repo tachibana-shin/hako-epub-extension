@@ -61,7 +61,18 @@ function getChapters() {
       href: anchor.getAttribute("href")!
     }
   })
-  if (chaptersReverse === true) chapters.reverse()
+  const numFirst = Number.parseInt(chapters[0].name.replace(/\D/g, ""))
+  const numLast = Number.parseInt(
+    chapters[chapters.length - 1].name.replace(/\D/g, "")
+  )
+
+  if (chaptersReverse) {
+    if (Number.isNaN(numFirst) || Number.isNaN(numLast)) {
+      chapters.reverse()
+    } else {
+      if (numFirst > numLast) chapters.reverse()
+    }
+  }
 
   return chapters
 }
