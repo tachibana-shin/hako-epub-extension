@@ -25,6 +25,23 @@ jobs:
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Publish to Microsoft Edge
+        uses: wdzeng/edge-addon@v2
+        with:
+          product-id: 9d50cc4e-2df2-4663-872c-24f83007f43b
+          zip-path: chromium.zip
+          api-key: ${{ secrets.EDGE_API_KEY }}
+          client-id: ${{ secrets.EDGE_CLIENT_ID }}
+
+      - name: Publish to Mozilla Firefox
+        uses: wdzeng/firefox-addon@v1
+        with:
+          addon-guid: hako-epub@shin.is-a.dev
+          xpi-path: firefox.zip
+          self-hosted: false
+          jwt-issuer: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          jwt-secret: ${{ secrets.FIREFOX_JWT_SECRET }}
+
       - name: Release
         uses: softprops/action-gh-release@v0.1.14
         with:
