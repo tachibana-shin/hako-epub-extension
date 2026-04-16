@@ -378,9 +378,6 @@ const registry: SiteConfig[] = [
       document
         .querySelector(".prose > .whitespace-pre-line")
         ?.textContent.trim() ?? "",
-    getChapterTitle: (anchor: HTMLElement) =>
-      anchor.querySelector(".text-sm")?.textContent.trim() ??
-      anchor.textContent.trim(),
     lazyDom: true,
     fetcherOptions: {
       concurrency: 1,
