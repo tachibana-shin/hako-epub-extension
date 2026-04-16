@@ -1,51 +1,46 @@
 <script lang="ts" setup>
 import saveAs from "file-saver"
 import { delMany, getMany, setMany } from "idb-keyval"
-import type { CheerioAPI } from "cheerio"
-import type { FetcherOptions } from "../registry"
+import type { SiteConfig } from "../registry"
 import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
 
 const {
   target,
-  title: propTitle,
-  description: propDescription,
-  cover: propCover,
-  author: propAuthor,
-  qBookTitle = ".series-name",
-  qChapters = "ul.list-chapters li > .chapter-name > a",
-  chaptersReverse = "false",
-  qContainer = "#chapter-content",
+  config: {
+    lang,
+    targetQueries: {
+      bookTitle: qBookTitle = ".series-name",
+      chapters: qChapters = "ul.list-chapters li > .chapter-name > a",
+      chaptersReverse = false,
+      container: qContainer = "#chapter-content"
+    } = {},
+    cleaner: propCleaner = (_) => {},
+    transformContainer: propTransformContainer = ($) => $,
+    preParse: propPreParse = (html: string) => {
+      const wrap = document.createElement("div")
+      wrap.innerHTML = html
 
-  cleaner: propCleaner = (_) => {},
-  transformContainer: propTransformContainer = ($) => $,
-  preParse: propPreParse = (html) => html,
-  getChapterTitle = (anchor) => anchor.textContent.trim(),
-  fetcherOptions: propFetcherOptions = {},
+      return wrap.innerHTML
+    },
+    getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
+    fetcherOptions: propFetcherOptions = {},
 
-  publisher = "hako.vn",
-  lang = "vi"
+    publisher,
+    title: configTitle,
+    description: configDescription,
+    extractCover: configExtractCover,
+    findAuthor: configFindAuthor,
+    findTags: configFindTags
+  },
+  source
 } = defineProps<{
   target: string
-  title?: string
-  description?: string
-  cover?: string
-  author?: string
-  qBookTitle?: string
-  qChapters?: string
-  chaptersReverse?: string
-  qContainer?: string
-
-  cleaner?: ($: CheerioAPI) => void
-  transformContainer?: ($: CheerioAPI) => CheerioAPI
-  preParse?: (html: string) => string
-  getChapterTitle?: (anchor: HTMLElement) => string
-  fetcherOptions?: FetcherOptions
-
-  publisher?: string
-  lang?: string
+  config: SiteConfig
+  source: HTMLElement
 }>()
+
 const targetEl = document.querySelector(`[v-id="${target}"]`)!
 if (!targetEl) throw new Error(`Target v-id='${target}' not found`)
 
@@ -58,10 +53,7 @@ const slug = computed(() => {
     .filter(Boolean)
     .at(-1)!
 
-  return (
-    slug +
-    (propTitle ?? targetEl.querySelector(".sect-title")!.textContent.trim())
-  )
+  return slug + configTitle(source, targetEl)
 })
 function getChapters() {
   const chapters = Array.from(
@@ -72,7 +64,7 @@ function getChapters() {
       href: anchor.getAttribute("href")!
     }
   })
-  if (chaptersReverse === "true") chapters.reverse()
+  if (chaptersReverse === true) chapters.reverse()
 
   return chapters
 }
@@ -133,48 +125,19 @@ async function downloadVolume() {
   blocking.value++
   console.log("download volume")
 
-  const title =
-    propTitle ?? targetEl.querySelector(".sect-title")!.textContent.trim()
-  const bookTitle = document.querySelector(qBookTitle)!.textContent.trim()
-  const infoItems = Array.from(document.querySelectorAll(".info-item"))
+  const title = configTitle(source, targetEl)
+  const bookTitle = document.querySelector(qBookTitle)!.textContent!.trim()
 
+  const authorStr = configFindAuthor(source, targetEl)
   const author =
-    propAuthor?.split("|") ??
-    Array.from(
-      infoItems
-        .find((info) =>
-          info.querySelector(".info-name")?.textContent.includes("Tác giả:")
-        )
-        ?.querySelector(".info-value")
-        ?.querySelectorAll("a, span") ?? []
-    ).map((el) => el.textContent.trim())
-  const tags = [
-    bookTitle,
-    ...Array.from(document.querySelectorAll(".series-gerne-item"))
-      .map((a) =>
-        a
-          .textContent!.trim()
-          .split(";")
-          .map((item) => item.trim())
-      )
-      .flat(1)
-      .filter(Boolean)
-  ]
-  const description =
-    propDescription ??
-    document.querySelector(".summary-content")?.textContent?.trim()
-  let cover =
-    propCover ??
-    targetEl
-      .querySelector(".volume-cover .content")
-      ?.getAttribute("style")
-      ?.match(/url\(["'](.+)["']\)/)![1]
-  if (!cover || cover.includes("nocover.jpg")) {
-    cover = document
-      .querySelector(".series-cover .content")
-      ?.getAttribute("style")
-      ?.match(/url\(["'](.+)["']\)/)![1]
-  }
+    typeof authorStr === "string"
+      ? authorStr.split("|").map((item) => item.trim())
+      : (authorStr ?? [])
+
+  const tags = [bookTitle, ...(configFindTags?.(source, targetEl) ?? [])]
+  const description = configDescription?.(source, targetEl)
+  const cover = configExtractCover(source, targetEl)
+  // TODO: clean me this logic for pages vietnamese
   const chapterNumber =
     Number.parseFloat(title.replace(/^tập|chapter|chap/i, "")) ||
     Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(
@@ -187,7 +150,7 @@ async function downloadVolume() {
     author,
     tags,
     publisher,
-    lang,
+    lang: typeof lang === "function" ? lang(source) : lang,
     description,
     cover,
     chapterNumber,

@@ -9,22 +9,30 @@ export interface FetcherOptions {
 }
 export interface SiteConfig {
   domains: string[]
-  findAuthor?: () => string | undefined
+  lang: string | ((h3: HTMLElement) => string)
+  /**
+   * @description Accept return string format "Author 1 | Author 2 | ..."
+   */
+  findAuthor: (
+    h3: HTMLElement,
+    target: Element
+  ) => string | string[] | undefined
   findBlocks: string
   findTarget: (h3: HTMLElement) => HTMLElement
-  extractCover?: (h3: HTMLElement) => string | undefined
-  publisher?: string
+  extractCover: (h3: HTMLElement, target: Element) => string | undefined
+  findTags?: (h3: HTMLElement, target: Element) => string[]
+  publisher: string
   targetQueries?: {
     bookTitle?: string
     chapters?: string
     chaptersReverse?: boolean
     container?: string
   }
-  title?: (h3: HTMLElement) => string
-  description?: () => string
+  title: (h3: HTMLElement, target: Element) => string
+  description?: (h3: HTMLElement, target: Element) => string | undefined
   cleaner?: ($: CheerioAPI) => void
   transformContainer?: ($: CheerioAPI) => CheerioAPI
-  preParse?: false | ((html: string) => string)
+  preParse?: (html: string) => string
   getChapterTitle?: (anchor: HTMLElement) => string
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean
@@ -33,14 +41,55 @@ export interface SiteConfig {
 const registry: SiteConfig[] = [
   {
     domains: ["hako.vn", "ln.hako.vn", "hako.vip", "docln.net", "docln.sbs"],
+    lang: "vi",
+    findAuthor: () => {
+      const infoItems = Array.from(document.querySelectorAll(".info-item"))
+      return Array.from(
+        infoItems
+          .find((info) =>
+            info.querySelector(".info-name")?.textContent?.includes("Tác giả:")
+          )
+          ?.querySelector(".info-value")
+          ?.querySelectorAll("a, span") ?? []
+      ).map((el) => el.textContent!.trim())
+    },
     findBlocks: ".volume-list:not(.disabled) > header > span.mobile-icon",
     findTarget: (h3) => h3.closest(".volume-list")!,
+    extractCover: (_, target) => {
+      const cover = target
+        .querySelector(".volume-cover .content")
+        ?.getAttribute("style")
+        ?.match(/url\(["'](.+)["']\)/)?.[1]
+
+      if (!cover || cover.includes("nocover.jpg")) {
+        return document
+          .querySelector(".series-cover .content")
+          ?.getAttribute("style")
+          ?.match(/url\(["'](.+)["']\)/)?.[1]
+      }
+
+      return cover
+    },
+    findTags: () =>
+      Array.from(document.querySelectorAll(".series-gerne-item"))
+        .map((a) =>
+          a
+            .textContent!.trim()
+            .split(";")
+            .map((item) => item.trim())
+        )
+        .flat(1)
+        .filter(Boolean),
+    title: (_, target) =>
+      target.querySelector(".sect-title")!.textContent!.trim(),
+    description: () =>
+      document.querySelector(".summary-content")?.textContent?.trim(),
     fetcherOptions: {
       concurrency: 5,
       sleep: 3_000,
       delayError429: 15_000
     },
-    preParse: false,
+    publisher: "hako.vn",
     transformContainer($) {
       // Decode utilities -----------------------------------------------------------
 
@@ -124,6 +173,7 @@ const registry: SiteConfig[] = [
   },
   {
     domains: ["sonako.fandom.com"],
+    lang: "vi",
     findAuthor: () => {
       // 著者名の抽出
       return Array.from(document.querySelectorAll("h2"))
@@ -198,6 +248,7 @@ const registry: SiteConfig[] = [
   },
   {
     domains: ["baka-tsuki.org", "www.baka-tsuki.org"],
+    lang: "en",
     findAuthor: () => {
       return Array.from(document.querySelectorAll("h2 > .mw-headline"))
         .find((t) => t.textContent?.includes("series by"))
@@ -239,6 +290,7 @@ const registry: SiteConfig[] = [
   },
   {
     domains: ["valvrareteam.net"],
+    lang: "vi",
     findAuthor: () => {
       return Array.from(document.querySelectorAll(".rd-author-name"))
         .map((span) => span.textContent.trim())
@@ -263,6 +315,7 @@ const registry: SiteConfig[] = [
   },
   {
     domains: ["www.foxaholic.com", "foxaholic.com"],
+    lang: "en",
     findAuthor: () =>
       Array.from(document.querySelectorAll(".author-content > a"))
         .map((a) => a.textContent.trim())
@@ -295,6 +348,7 @@ const registry: SiteConfig[] = [
   },
   {
     domains: ["novest.me"],
+    lang: "vi",
     findAuthor: () =>
       Array.from(document.querySelectorAll("a[href]"))
         .filter((a) => a.getAttribute("href")?.includes("author="))
