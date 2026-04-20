@@ -27,8 +27,7 @@ export const sharedConfig: UserConfig = {
   define: {
     "__DEV__": isDev,
     "__NAME__": JSON.stringify(packageJson.name),
-    "process.env.NODE_ENV": JSON.stringify("production"),
-    "process.platform": "unix"
+    "process.env.NODE_ENV": JSON.stringify("production")
   },
   plugins: [
     registryPlugin(),
