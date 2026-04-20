@@ -24,11 +24,17 @@ async function stubIndexHtml() {
   }
 }
 
+async function copyLocales() {
+  await fs.copy(r("src/_locales"), r("extension/_locales"))
+  log("PRE", "copy locales")
+}
+
 function writeManifest() {
   execSync("bun ./scripts/manifest.ts", { stdio: "inherit" })
 }
 
 writeManifest()
+copyLocales()
 
 if (isDev) {
   stubIndexHtml()
@@ -37,5 +43,8 @@ if (isDev) {
   })
   chokidar.watch([r("src/manifest.ts"), r("package.json")]).on("change", () => {
     writeManifest()
+  })
+  chokidar.watch(r("src/_locales/**")).on("change", () => {
+    copyLocales()
   })
 }

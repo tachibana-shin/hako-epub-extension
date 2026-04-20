@@ -18,9 +18,10 @@ export async function getManifest() {
   // can also be conditional based on your need
   const manifest: Manifest.WebExtensionManifest = {
     manifest_version: 3,
-    name: pkg.displayName || pkg.name,
+    name: "__MSG_name__",
     version: pkg.version,
-    description: pkg.description,
+    description: "__MSG_description__",
+    default_locale: "vi",
     // action: {
     //   default_icon: "assets/icon-512.png",
     //   default_popup: "dist/popup/index.html"
