@@ -21,6 +21,10 @@ jobs:
       - name: Setup Bun 🍞
         uses: oven-sh/setup-bun@v2
 
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 25.8.1
+
       - name: Install dependencies 📦
         run: bun i
 

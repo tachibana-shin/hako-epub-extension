@@ -16,6 +16,10 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 25.8.1
+
       - name: Pack
         run: bun i && bun run build && bun pack && mv extension.crx chromium.crx && mv extension.xpi chromium.xpi && mv extension.zip chromium.zip && bun run build-firefox && bun pack-firefox && mv extension-firefox.crx firefox.crx && mv extension-firefox.xpi firefox.xpi && mv extension-firefox.zip firefox.zip
 
