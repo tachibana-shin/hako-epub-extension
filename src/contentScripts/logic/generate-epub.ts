@@ -306,7 +306,7 @@ export async function generateEpub(
       const $ = load(content!, { xmlMode: true })
       $(`
 <meta name="calibre:series" content="${bookTitle}"/>
-<meta name="calibre:title_sort" content="${bookTitle} Tập ${chapterNumber}"/>
+<meta name="calibre:title_sort" content="${bookTitle} ${lang === "vi" ? "Tập" : "Volume"} ${chapterNumber}"/>
 <meta name="calibre:series_index" content="${chapterNumber}"/>
 ${coverImg ? `<meta name="cover" content="cover.${coverImg.ext}"/>` : ""}
 ${tags.map((name) => `<dc:subject>${name}</dc:subject>`).join("\n")}
