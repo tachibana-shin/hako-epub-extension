@@ -33,7 +33,6 @@ export default defineRegistry({
   description: () =>
     $(".mdv-san-pham-show-gioi-thieu-des")?.textContent?.trim(),
   fetcherOptions: {
-    sleep: 3_000,
     delayError429: 15_000
   },
   publisher: "beetruyen.net",

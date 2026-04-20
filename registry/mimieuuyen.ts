@@ -26,7 +26,6 @@ export default defineRegistry({
   },
   description: () => $("#description")?.textContent?.trim(),
   fetcherOptions: {
-    sleep: 3_000,
     delayError429: 15_000
   },
   publisher: "mimieuuyen.com",

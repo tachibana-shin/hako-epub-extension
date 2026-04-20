@@ -23,7 +23,6 @@ export default defineRegistry({
   },
   description: () => $(".tab-comic-description")?.textContent?.trim(),
   fetcherOptions: {
-    sleep: 3_000,
     delayError429: 15_000
   },
   publisher: "luvevaland.co",

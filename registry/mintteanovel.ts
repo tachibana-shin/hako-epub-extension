@@ -21,7 +21,6 @@ export default defineRegistry({
   },
   description: () => $(".summary__content")?.textContent?.trim(),
   fetcherOptions: {
-    sleep: 3_000,
     delayError429: 15_000
   },
   publisher: "mintteanovel.com",

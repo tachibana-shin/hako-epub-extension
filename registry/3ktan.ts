@@ -41,7 +41,6 @@ export default defineRegistry({
   description: () =>
     document.querySelector(".summary-content")?.textContent?.trim(),
   fetcherOptions: {
-    sleep: 3_000,
     delayError429: 15_000
   },
   publisher: "ln.3ktan.com",
