@@ -15,6 +15,7 @@ A browser extension that allows you to download EPub files directly from light n
 - https://docln.sbs
 - https://sonako.fandom.com
 - https://ln.3ktan.com
+- https://luvevaland.co
 - https://valvrareteam.net
 - https://www.foxaholic.com
 - https://foxaholic.com
