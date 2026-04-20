@@ -17,7 +17,7 @@ declare module "*?all-registry" {
   export default registry
 }
 
-declare module "*?all-registry-domains" {
+declare module "*?registry-domains" {
   const domains: string[]
   export default domains
 }

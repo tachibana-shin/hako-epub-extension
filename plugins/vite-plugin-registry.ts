@@ -13,7 +13,7 @@ export function registryPlugin(): Plugin {
       if (id.endsWith("?all-registry")) {
         return resolvedVirtualModuleId
       }
-      if (id.endsWith("?all-registry-domains")) {
+      if (id.endsWith("?registry-domains")) {
         return `${resolvedVirtualModuleId}-domains`
       }
     },
