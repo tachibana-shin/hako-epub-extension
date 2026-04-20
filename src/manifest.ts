@@ -1,16 +1,17 @@
 import type { Manifest } from "webextension-polyfill"
 import fs from "fs-extra"
-import { isDev, isFirefox, port, r } from "../scripts/utils"
+import { getRegistry, isDev, isFirefox, port, r } from "../scripts/utils"
 
 import type PkgType from "../package.json"
-import registry from "./contentScripts/registry"
-
-export const initiatorDomains = registry.map((item) => item.domains).flat(1)
-const host_permissions = initiatorDomains
-  .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
-  .flat(1)
 
 export async function getManifest() {
+  const registry = await getRegistry()
+
+  const initiatorDomains = registry.map((item) => item.domains).flat(1)
+  const host_permissions = initiatorDomains
+    .map((domain) => [`https://${domain}/*`, `https://*.${domain}/*`])
+    .flat(1)
+
   const pkg = (await fs.readJSON(r("package.json"))) as typeof PkgType
 
   // update this file to update this manifest.json

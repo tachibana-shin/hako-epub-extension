@@ -1,6 +1,12 @@
-import { resolve } from "node:path"
+import { join, resolve } from "node:path"
 import process from "node:process"
+import fs from "node:fs"
 import { bgCyan, black } from "kolorist"
+
+import { type SiteConfig, defineRegistry } from "../registry/types"
+
+// eslint-disable-next-line no-restricted-globals
+Object.assign(typeof self !== "undefined" ? self : global, { defineRegistry })
 
 export const port = Number(process.env.PORT || "") || 3303
 export const r = (...args: string[]) => resolve(__dirname, "..", ...args)
@@ -9,4 +15,22 @@ export const isFirefox = process.env.EXTENSION === "firefox"
 
 export function log(name: string, message: string) {
   console.log(black(bgCyan(` ${name} `)), message)
+}
+
+export async function getRegistry() {
+  const registryDir = resolve(import.meta.dirname, "../registry")
+  const files = fs
+    .readdirSync(registryDir)
+    .filter(
+      (file) =>
+        file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts"
+    )
+
+  const sites = await Promise.all(
+    files.map(async (file) => {
+      const mod = await import(join(registryDir, file))
+      return mod.default as SiteConfig
+    })
+  )
+  return sites
 }

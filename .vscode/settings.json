@@ -1,8 +1,5 @@
 {
-  "cSpell.words": [
-    "Sonako",
-    "Vitesse"
-  ],
+  "cSpell.words": ["Sonako", "Vitesse"],
   "typescript.tsdk": "node_modules/typescript/lib",
   "vite.autoStart": false,
   "eslint.experimental.useFlatConfig": true,

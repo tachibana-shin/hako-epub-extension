@@ -1,8 +1,8 @@
 // import { onMessage } from "webext-bridge/background"
 // import { setMany } from "idb-keyval"
 
+import initiatorDomains from "../../registry?all-registry-domains"
 import { isFirefox } from "~/env"
-import { initiatorDomains } from "~/manifest"
 
 // only on dev mode
 if (import.meta.hot) {
@@ -38,8 +38,7 @@ if (isFirefox) {
     },
     ["blocking", "responseHeaders"]
   )
-}
-else {
+} else {
   const rules = [
     {
       id: 1,

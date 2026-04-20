@@ -15,6 +15,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills"
 import removeConsole from "vite-plugin-remove-console"
 import { isDev, port, r } from "./scripts/utils"
 import packageJson from "./package.json"
+import { registryPlugin } from "./plugins/vite-plugin-registry"
 
 export const sharedConfig: UserConfig = {
   root: r("src"),
@@ -30,6 +31,7 @@ export const sharedConfig: UserConfig = {
     "process.platform": "unix"
   },
   plugins: [
+    registryPlugin(),
     arrayBuffer(),
     nodePolyfills({ globals: { process: true } }),
 
@@ -48,6 +50,7 @@ export const sharedConfig: UserConfig = {
           "webextension-polyfill": [["=", "browser"]]
         }
       ],
+      dirs: [r("registry/types/*.ts")],
       dts: r("src/auto-imports.d.ts")
     }),
 

@@ -7,7 +7,7 @@ export async function cleanChapter(
   qContainer: string,
   cleaner: ($: CheerioAPI) => void,
   transformContainer: ($: CheerioAPI) => CheerioAPI,
-  preParse: (html: string) => string,
+  preParse: (html: string) => string
 ): Promise<string | null> {
   const $ = transformContainer(
     load(preParse(html), { xml: { xmlMode: true, selfClosingTags: false } })

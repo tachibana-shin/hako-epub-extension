@@ -63,8 +63,7 @@ export async function buildCSS() {
       css,
       files
     }
-  }
-  catch (e: any) {
+  } catch (e: any) {
     console.error(`${c.red("!")} Failed to build css`, e)
     if (e.loc) {
       console.error("Error at line", e.loc.line, "column", e.loc.column)

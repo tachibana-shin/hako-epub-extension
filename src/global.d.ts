@@ -9,3 +9,15 @@ declare module "*.vue" {
 interface Buffer {
   arrayBuffer: () => ArrayBuffer
 }
+
+declare module "*?all-registry" {
+  import type { SiteConfig } from "../registry/types"
+
+  const registry: SiteConfig[]
+  export default registry
+}
+
+declare module "*?all-registry-domains" {
+  const domains: string[]
+  export default domains
+}

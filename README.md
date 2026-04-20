@@ -13,11 +13,11 @@ A browser extension that allows you to download EPub files directly from light n
 - https://docln.net
 - https://docln.sbs
 - https://sonako.fandom.com
-- https://baka-tsuki.org
-- https://www.baka-tsuki.org
 - https://valvrareteam.net
 - https://www.foxaholic.com
 - https://foxaholic.com
+- https://baka-tsuki.org
+- https://www.baka-tsuki.org
 - https://novest.me
 <!-- @end -->
 
