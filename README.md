@@ -18,6 +18,7 @@ A browser extension that allows you to download EPub files directly from light n
 - https://luvevaland.co
 - https://mimieuuyen.com
 - https://valvrareteam.net
+- https://mintteanovel.com
 - https://www.foxaholic.com
 - https://foxaholic.com
 - https://baka-tsuki.org
