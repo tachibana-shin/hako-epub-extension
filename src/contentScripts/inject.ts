@@ -36,8 +36,11 @@ function bind(config: SiteConfig) {
 
 let cron = false
 function injector() {
-  const config = registry.find((item) =>
-    item.domains.includes(location.hostname)
+  const hostname = location.hostname.replace(/^www\./, "")
+  const config = registry.find(
+    (item) =>
+      item.domains.includes(location.hostname) ||
+      item.domains.includes(hostname)
   )
   if (!config) return console.warn("This domain not exists registry")
 
