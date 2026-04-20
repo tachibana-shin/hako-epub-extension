@@ -3,7 +3,7 @@ export function containsAll<T extends Element>(
   text: string
 ): T[] {
   if (typeof selector === "string") {
-    selector = document.querySelectorAll(selector)
+    selector = $$<T>(selector)
   }
 
   return Array.from(selector).filter((element) =>
@@ -16,7 +16,7 @@ export function contains<T extends Element>(
   text: string
 ): T | undefined {
   if (typeof selector === "string") {
-    selector = document.querySelectorAll(selector)
+    selector = $$<T>(selector)
   }
 
   return Array.from(selector).find((element) =>
