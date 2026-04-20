@@ -14,6 +14,7 @@ A browser extension that allows you to download EPub files directly from light n
 - https://docln.net
 - https://docln.sbs
 - https://sonako.fandom.com
+- https://phongphongtam2.com
 - https://ln.3ktan.com
 - https://msvtruyen.com
 - https://luvevaland.co
