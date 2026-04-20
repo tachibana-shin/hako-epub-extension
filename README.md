@@ -27,6 +27,7 @@ A browser extension that allows you to download EPub files directly from light n
 - https://novest.me
 - https://dammy.me
 - https://monkeydtruyen.com
+- https://otruyen.vn
 <!-- @end -->
 
 ## Sponsor ☕
