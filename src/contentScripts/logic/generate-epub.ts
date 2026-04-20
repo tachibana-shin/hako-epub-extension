@@ -251,7 +251,8 @@ export async function generateEpub(
             preParse
           )
           if (content === null) {
-            throw new Error("Can't find content in chapter")
+            console.warn(chapter)
+            throw new Error(`Can't find content in chapter '${chapter.name}'`)
           }
 
           onProgress((((index + 1) / chapters.length) * 50) / 100)
