@@ -7,6 +7,7 @@ A browser extension that allows you to download EPub files directly from light n
 
 ## List website support
 <!-- @list website support -->
+- https://beetruyen.net
 - https://hako.vn
 - https://ln.hako.vn
 - https://hako.vip
