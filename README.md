@@ -52,7 +52,122 @@ You can find the extension on the following stores:
 1. Navigate to `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on...**.
 3. Select the `manifest.json` file from your extracted folder.
-   *(Note: Temporary add-ons in Firefox are removed when the browser is closed).*
+   _(Note: Temporary add-ons in Firefox are removed when the browser is closed)._
+
+## 🛠️ Adding a New Website (Registry)
+
+To add support for a new website, you need to create a registry configuration file in the `registry/` directory.
+
+### 1. Create a Configuration File
+
+Create a new `.ts` file in `registry/` (e.g., `registry/mysite.ts`).
+
+### 2. Define the Registry
+
+Use the `defineRegistry` helper to define your site configuration:
+
+```typescript
+export default defineRegistry({
+  domains: ["mysite.com"],
+  lang: "vi", // Target language
+  publisher: "My Site",
+
+  // CSS Selector for elements where the download button should appear (e.g., volume headers)
+  findBlocks: ".volume-header",
+
+  // Logic to find the parent container of the volume to attach the component
+  findTarget: (h3) => h3.closest(".volume-box")!,
+
+  // Metadata extraction
+  title: (h3, target) => h3.textContent!.trim(),
+  findAuthor: (h3, target) => $(".author-name")?.textContent?.trim(),
+  extractCover: (h3, target) => $(".cover-img")?.getAttribute("src"),
+  description: (h3, target) => $(".summary")?.textContent?.trim(),
+  findTags: (h3, target) =>
+    Array.from($$(".genre")).map((a) => a.textContent?.trim()),
+
+  // Required queries for the crawler
+  targetQueries: {
+    bookTitle: ".series-title", // Selector for the main book title
+    chapters: ".chapter-list a", // Selector for chapter links
+    chaptersReverse: false, // Optional: Set to true if chapters are descending
+    container: "#chapter-content" // Selector for the actual story text
+  },
+
+  // Optional hooks for content processing
+  cleaner($) {
+    // Remove unwanted elements using Cheerio
+    $(".ads, .social-share").remove()
+  },
+
+  transformContainer($) {
+    // Modify the content container (e.g., handling protected text)
+    const content = $("#chapter-protected").text()
+    // decryption logic here...
+    return $
+  },
+
+  // Optional: Custom chapter title extraction
+  getChapterTitle: (anchor) =>
+    anchor.querySelector(".title")?.textContent?.trim() || "Chapter",
+
+  // Downloader configuration
+  fetcherOptions: {
+    concurrency: 5,
+    sleep: 3000,
+    retry: 3,
+    delayError429: 15000
+  },
+
+  lazyDom: false // Set to true if content is loaded dynamically
+})
+```
+
+### 3. Registry Options Detail
+
+| Option               | Type                 | Description                                                                                                           |
+| :------------------- | :------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `domains`            | `string[]`           | **Required**. List of domains where this config will be active.                                                       |
+| `lang`               | `string \| Function` | **Required**. Language code (e.g., `"vi"`, `"en"`) or a function that returns it.                                     |
+| `publisher`          | `string`             | **Required**. Name of the site/publisher.                                                                             |
+| `findBlocks`         | `string`             | **Required**. CSS selector for elements that trigger the download button (usually volume titles).                     |
+| `findTarget`         | `Function`           | **Required**. Function to find the container element for a specific volume based on the header found by `findBlocks`. |
+| `targetQueries`      | `Object`             | **Required**. CSS selectors used for crawling:                                                                        |
+|                      | `.bookTitle`         | Selector for the main story title on the page.                                                                        |
+|                      | `.chapters`          | Selector for links (`<a>`) to chapters within a volume.                                                               |
+|                      | `.chaptersReverse`   | _Optional_. Set to `true` if chapters are listed in descending order.                                                 |
+|                      | `.container`         | Selector for the main content area in the reading page.                                                               |
+| `title`              | `Function`           | **Required**. Function to extract the volume title.                                                                   |
+| `findAuthor`         | `Function`           | **Required**. Function to extract the author(s). Can return a string or an array of strings.                          |
+| `extractCover`       | `Function`           | **Required**. Function to extract the URL of the cover image.                                                         |
+| `description`        | `Function`           | _Optional_. Function to extract the book description.                                                                 |
+| `findTags`           | `Function`           | _Optional_. Function to extract tags/genres.                                                                          |
+| `cleaner`            | `Function`           | _Optional_. Hook to clean up the chapter content using Cheerio (`$`).                                                 |
+| `transformContainer` | `Function`           | _Optional_. Hook to transform the content container (e.g., decryption logic).                                         |
+| `preParse`           | `Function`           | _Optional_. Pre-process the raw HTML string before it is parsed by Cheerio.                                           |
+| `getChapterTitle`    | `Function`           | _Optional_. Function to extract a custom chapter title from the link element.                                         |
+| `fetcherOptions`     | `Object`             | _Optional_. Configuration for the downloader:                                                                         |
+|                      | `.concurrency`       | Number of simultaneous requests (default: 5).                                                                         |
+|                      | `.sleep`             | Delay in milliseconds after each chapter download.                                                                    |
+|                      | `.retry`             | Number of retry attempts for failed requests.                                                                         |
+|                      | `.delayError429`     | Delay in milliseconds when encountering a 429 (Rate Limit) error.                                                     |
+| `lazyDom`            | `boolean`            | _Optional_. Set to `true` if the page loads content dynamically/lazily.                                               |
+
+### 4. Use Utility Helpers
+
+You can use pre-defined utilities in `registry/utils/` to make selection easier:
+
+- `$`: Equivalent to `document.querySelector`.
+- `$$`: Equivalent to `document.querySelectorAll`.
+- `contains`: Find an element containing specific text.
+
+### 5. Update the Website List
+
+After adding your registry, run the following command to automatically update the list of supported websites in this `README.md`:
+
+```bash
+bun update-readme
+```
 
 ## Screenshot
 Hako
