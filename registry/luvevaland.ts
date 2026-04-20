@@ -23,7 +23,6 @@ export default defineRegistry({
   },
   description: () => $(".tab-comic-description")?.textContent?.trim(),
   fetcherOptions: {
-    concurrency: 5,
     sleep: 3_000,
     delayError429: 15_000
   },
