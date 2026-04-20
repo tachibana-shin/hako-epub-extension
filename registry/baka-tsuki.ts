@@ -1,3 +1,7 @@
+// eslint-disable-next-line ts/ban-ts-comment
+// @ts-expect-error
+import sonako from "./sonako.ts"
+
 export default defineRegistry({
   domains: ["baka-tsuki.org", "www.baka-tsuki.org"],
   lang: "en",
@@ -8,26 +12,8 @@ export default defineRegistry({
       .at(-1)
       ?.trim()
   },
-  findBlocks:
-    "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), h3:has(+ figure + table), h3:has(+ figure + * + table)" +
-    ", .wds-tabber > .wds-tab__content > h3:has(+ .volume)",
-  findTarget: (h3) => {
-    let ul = h3.nextElementSibling
-
-    if (ul?.classList.contains("volume")) return ul as HTMLElement
-
-    if (ul && ul.tagName === "FIGURE") {
-      ul = ul.nextElementSibling
-    }
-
-    while (ul && ul.tagName !== "UL" && ul.tagName !== "TABLE") {
-      ul = ul.nextElementSibling
-    }
-
-    if (ul === null) throw new Error("Can't find target")
-
-    return ul as HTMLElement
-  },
+  findBlocks: sonako.findBlocks,
+  findTarget: sonako.findTarget,
   extractCover: (h3) => {
     // 表紙画像の抽出
     const ul = h3.nextElementSibling
@@ -40,11 +26,7 @@ export default defineRegistry({
     return undefined
   },
   publisher: "baka-tsuki.org",
-  targetQueries: {
-    bookTitle: ".mw-page-title-main",
-    chapters: "li > a",
-    container: "#mw-content-text"
-  },
+  targetQueries: sonako.targetQueries,
   cleaner: ($) => {
     $(".wikitable, .mw-editsection, .printfooter").remove()
     $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
