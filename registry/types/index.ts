@@ -26,7 +26,7 @@ export interface SiteConfig {
     bookTitle: string
     chapters: string
     chaptersReverse?: boolean
-    container: string
+    container: string | (($: CheerioAPI) => string | null)
   }
   title: (h3: HTMLElement, target: Element) => string
   description?: (h3: HTMLElement, target: Element) => string | undefined

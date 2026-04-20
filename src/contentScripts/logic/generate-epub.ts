@@ -179,7 +179,7 @@ export interface OptionsGenerateEpub {
 export async function generateEpub(
   options: OptionsGenerateEpub,
   onProgress: (progress: number) => void,
-  qContainer: string,
+  qContainer: string | (($: CheerioAPI) => string | null),
   cleaner: ($: CheerioAPI) => void,
   transformContainer: ($: CheerioAPI) => CheerioAPI,
   fetcherOptions: FetcherOptions,

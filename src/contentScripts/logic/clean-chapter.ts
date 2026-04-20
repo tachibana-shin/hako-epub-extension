@@ -4,7 +4,7 @@ import { minify } from "html-minifier-terser"
 
 export async function cleanChapter(
   html: string,
-  qContainer: string,
+  qContainer: string | (($: CheerioAPI) => string | null),
   cleaner: ($: CheerioAPI) => void,
   transformContainer: ($: CheerioAPI) => CheerioAPI,
   preParse: (html: string) => string
@@ -13,7 +13,12 @@ export async function cleanChapter(
     load(preParse(html), { xml: { xmlMode: true, selfClosingTags: false } })
   )
 
-  if ($(qContainer).length === 0) return null
+  if (typeof qContainer === "function") {
+    const html = qContainer($)
+    if (html === null || html.length === 0) return null
+  } else {
+    if ($(qContainer).length === 0) return null
+  }
 
   $(".d-none").remove()
   $('[id^="note"]').each((_, el) => {
@@ -23,11 +28,9 @@ export async function cleanChapter(
   })
   $("script, noscript").remove()
 
-  $("[style]").each((_, el) => {
-    const $el = $(el)
-    if ($el.attr("style")?.match(/display:\s*none/)) $el.remove()
-  })
-  $(`${qContainer} > a[target='__blank']`).remove()
+  if (typeof qContainer !== "function") {
+    $(`${qContainer} > a[target='__blank']`).remove()
+  }
 
   $("img").each((_, image) => {
     const $img = $(image)
@@ -42,7 +45,16 @@ export async function cleanChapter(
 
   cleaner($)
 
-  const output = await minify($(qContainer).html()!, {
+  $("[style]").each((_, el) => {
+    const $el = $(el)
+    if ($el.attr("style")?.match(/display:\s*none/)) $el.remove()
+  })
+
+  const rawHtml =
+    typeof qContainer === "function" ? qContainer($) : $(qContainer).html()
+  if (!rawHtml) return null
+
+  const output = await minify(rawHtml, {
     collapseWhitespace: true,
     removeComments: true,
     removeRedundantAttributes: true,
