@@ -221,6 +221,11 @@ export async function generateEpub(
             del(`cached_${chapter.href}`)
           }
 
+          // fix empty content for javascript: href
+          if (chapter.href.startsWith("javascript:")) {
+            return { title: chapter.name, content: "" }
+          }
+
           const response = await fetch(chapter.href)
           // if response is too many request wait 30 seconds
           if (response.status === 429 && idx < (fetcherOptions.retry ?? 10)) {
