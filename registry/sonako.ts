@@ -61,20 +61,6 @@ export default defineRegistry({
     $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
 
     $("h2:first-child:has(.mw-headline)").remove()
-
-    $("img").each((_, img) => {
-      const $img = $(img)
-
-      $img.attr("data-src", $img.attr("data-src")?.split("/revision/")[0])
-      $img.attr(
-        "src",
-        ($img.attr("data-src") || $img.attr("src"))?.split("/revision/")[0]
-      )
-
-      if ($img.parent().is("a")) {
-        $img.parent().replaceWith($img)
-      }
-    })
   },
   title: (h3) => h3.textContent.trim().replace("[]", "")
 })

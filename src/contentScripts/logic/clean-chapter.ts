@@ -33,6 +33,10 @@ export async function cleanChapter(
     const $img = $(image)
     const src = $img.attr("data-src") ?? $img.attr("src")!
 
+    if ($img.parent().is("a")) {
+      $img.parent().replaceWith($img)
+    }
+
     $img.attr("src", src.endsWith("#cors") ? src : `${src}#cors`)
   })
 
@@ -48,7 +52,8 @@ export async function cleanChapter(
     continueOnParseError: true
   })
     // fix XHTML not parse &nbsp;
-    .then((html) => html.replace(/&nbsp;/g, "&#160;"))
+    .then((html) => html.replaceAll("&amp;", "&"))
+    .then((html) => html.replaceAll("&nbsp;", "\u00A0"))
 
   const notes = $('[id^="note"]')
     .toArray()

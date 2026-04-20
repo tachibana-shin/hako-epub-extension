@@ -50,14 +50,6 @@ export default defineRegistry({
     $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
 
     $("h2:first-child:has(.mw-headline)").remove()
-
-    $("img").each((_, img) => {
-      const $img = $(img)
-
-      if ($img.parent().is("a")) {
-        $img.parent().replaceWith($img)
-      }
-    })
   },
   title: (h3) =>
     Array.from(h3.querySelector(".mw-headline")?.childNodes ?? [])
