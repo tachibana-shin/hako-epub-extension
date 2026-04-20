@@ -5,7 +5,7 @@ import { getRegistry, r } from "../scripts/utils"
 
 export function registryPlugin(): Plugin {
   const virtualModuleId = "virtual:registry"
-  const resolvedVirtualModuleId = `\0${virtualModuleId}`
+  const resolvedVirtualModuleId = `r${virtualModuleId}`
 
   return {
     name: "registry-plugin",
