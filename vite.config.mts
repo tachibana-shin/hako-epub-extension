@@ -84,7 +84,7 @@ export const sharedConfig: UserConfig = {
       }
     },
 
-    removeConsole()
+    ...(isDev ? [] : [removeConsole()])
   ],
   optimizeDeps: {
     include: ["vue", "@vueuse/core", "webextension-polyfill"],

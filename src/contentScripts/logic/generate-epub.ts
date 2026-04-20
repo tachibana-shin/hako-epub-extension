@@ -230,7 +230,10 @@ export async function generateEpub(
             return await retry(idx + 1)
           }
 
-          if (!response.ok) throw response.text()
+          if (!response.ok) {
+            console.error(response)
+            throw response.text()
+          }
 
           const html = await response.text()
           await set(`cached_${chapter.href}`, html)
@@ -242,7 +245,9 @@ export async function generateEpub(
             transformContainer,
             preParse
           )
-          if (content === null) throw html
+          if (content === null) {
+            throw new Error("Can't find content in chapter")
+          }
 
           onProgress((((index + 1) / chapters.length) * 50) / 100)
 
@@ -317,7 +322,9 @@ ${tags.map((name) => `<dc:subject>${name}</dc:subject>`).join("\n")}
 <item id="cover.${coverImg.ext}" href="cover.${coverImg.ext}" media-type="image/${coverImg.ext}" properties="cover-image"/>
     `).prependTo($("manifest"))
         $('<itemref idref="titlepage">').prependTo($("spine"))
-        $(`<reference href="titlepage.xhtml" title="Cover" type="cover"/>`).appendTo($("guide"))
+        $(
+          `<reference href="titlepage.xhtml" title="Cover" type="cover"/>`
+        ).appendTo($("guide"))
       }
 
       return $.html()
