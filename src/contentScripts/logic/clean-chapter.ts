@@ -47,6 +47,8 @@ export async function cleanChapter(
     minifyJS: true,
     continueOnParseError: true
   })
+    // fix XHTML not parse &nbsp;
+    .then((html) => html.replace(/&nbsp;/g, "&#160;"))
 
   const notes = $('[id^="note"]')
     .toArray()
