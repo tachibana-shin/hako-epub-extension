@@ -21,6 +21,7 @@ A browser extension that allows you to download EPub files directly from light n
 - https://baka-tsuki.org
 - https://www.baka-tsuki.org
 - https://novest.me
+- https://dammy.me
 <!-- @end -->
 
 ## Sponsor ☕
