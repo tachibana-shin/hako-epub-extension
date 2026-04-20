@@ -11,10 +11,19 @@ useEventListener(
   (
     event: CustomEvent<{
       msg: string
+      type: "error" | "success" | string
       options: ExternalToast
     }>
   ) => {
-    toast(event.detail.msg, event.detail.options)
+    const { msg, type, options } = event.detail
+
+    if (type === "error") {
+      toast.error(msg, options)
+    } else if (type === "success") {
+      toast.success(msg, options)
+    } else {
+      toast(msg, options)
+    }
   }
 )
 </script>

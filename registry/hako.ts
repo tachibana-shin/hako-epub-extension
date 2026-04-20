@@ -48,6 +48,11 @@ export default defineRegistry({
     sleep: 3_000,
     delayError429: 15_000
   },
+  targetQueries: {
+    bookTitle: ".series-name",
+    chapters: "ul.list-chapters li > .chapter-name > a",
+    container: "#chapter-content"
+  },
   publisher: "hako.vn",
   transformContainer($) {
     // Decode utilities -----------------------------------------------------------

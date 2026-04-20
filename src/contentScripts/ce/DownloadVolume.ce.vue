@@ -61,6 +61,8 @@ function getChapters() {
       href: anchor.getAttribute("href")!
     }
   })
+  if (chapters.length === 0) return chapters
+
   const numFirst = Number.parseInt(chapters[0].name.replace(/\D/g, ""))
   const numLast = Number.parseInt(
     chapters[chapters.length - 1].name.replace(/\D/g, "")
@@ -133,8 +135,11 @@ async function downloadVolume() {
   blocking.value++
   console.log("download volume")
 
+  console.log({ source })
+
   const title = configTitle(source, targetEl)
-  const bookTitle = document.querySelector(qBookTitle)!.textContent!.trim()
+  const bookTitle =
+    document.querySelector(qBookTitle)?.textContent?.trim() ?? "Unknown"
 
   const authorStr = configFindAuthor(source, targetEl)
   const author =
@@ -177,7 +182,7 @@ async function downloadVolume() {
     propPreParse
   ).catch((err) => {
     console.error(err)
-    toastShadow(`Error generating EPUB ${err}`, { type: "error" })
+    toastShadow(`Error generating EPUB ${err}`, "error")
 
     throw err
   })
@@ -205,7 +210,7 @@ async function downloadD() {
     saveAs(blob, `${options.title} - ${options.bookTitle}.epub`)
   } else {
     delMany([slug.value, `${slug.value}_file`])
-    toastShadow("File not found retry download", { type: "error" })
+    toastShadow("File not found retry download", "error")
   }
 }
 

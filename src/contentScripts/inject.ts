@@ -1,3 +1,4 @@
+import { toast } from "vue-sonner"
 import { register } from "./ce/register"
 import type { SiteConfig } from "./registry"
 import registry from "./registry"
@@ -13,6 +14,14 @@ function bind(config: SiteConfig) {
 
     // ▲ v-id の付与（章リスト）
     const targetEl = config.findTarget(h3)
+    if (!targetEl) {
+      toast("Target not found", {
+        description: "Please check config"
+      })
+
+      return
+    }
+
     targetEl.setAttribute("v-id", id)
 
     downloadVolume.setAttribute("target", id)

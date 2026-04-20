@@ -22,11 +22,11 @@ export interface SiteConfig {
   extractCover: (h3: HTMLElement, target: Element) => string | undefined
   findTags?: (h3: HTMLElement, target: Element) => string[]
   publisher: string
-  targetQueries?: {
-    bookTitle?: string
-    chapters?: string
+  targetQueries: {
+    bookTitle: string
+    chapters: string
     chaptersReverse?: boolean
-    container?: string
+    container: string
   }
   title: (h3: HTMLElement, target: Element) => string
   description?: (h3: HTMLElement, target: Element) => string | undefined

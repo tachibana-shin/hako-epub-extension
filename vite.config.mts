@@ -49,7 +49,7 @@ export const sharedConfig: UserConfig = {
           "webextension-polyfill": [["=", "browser"]]
         }
       ],
-      dirs: [r("registry/types/*.ts")],
+      dirs: [r("registry/types/*.ts"), r("registry/utils/*.ts")],
       dts: r("src/auto-imports.d.ts")
     }),
 
