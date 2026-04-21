@@ -1,5 +1,6 @@
 import type { CheerioAPI } from "cheerio"
 
+export type PromiseOr<T> = T | Promise<T>
 export interface FetcherOptions {
   concurrency?: number
   delayError429?: number
@@ -32,8 +33,9 @@ export interface SiteConfig {
   description?: (h3: HTMLElement, target: Element) => string | undefined
   cleaner?: ($: CheerioAPI) => void
   transformContainer?: ($: CheerioAPI) => CheerioAPI
-  preParse?: (html: string) => string
+  preParse?: (html: string) => PromiseOr<string>
   getChapterTitle?: (anchor: HTMLElement) => string
+  fetchChapter?: (chapter: { name: string, href: string }) => PromiseLike<Response>
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean
 }

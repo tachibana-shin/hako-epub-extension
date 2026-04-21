@@ -1,16 +1,17 @@
 import type { CheerioAPI } from "cheerio"
 import { load } from "cheerio"
 import { minify } from "html-minifier-terser"
+import type { PromiseOr } from "registry/types"
 
 export async function cleanChapter(
   html: string,
   qContainer: string | (($: CheerioAPI) => string | null),
   cleaner: ($: CheerioAPI) => void,
   transformContainer: ($: CheerioAPI) => CheerioAPI,
-  preParse: (html: string) => string
+  preParse: (html: string) => PromiseOr<string>
 ): Promise<string | null> {
   const $ = transformContainer(
-    load(preParse(html), { xml: { xmlMode: true, selfClosingTags: false } })
+    load(await preParse(html), { xml: { xmlMode: true, selfClosingTags: false } })
   )
 
   if (typeof qContainer === "function") {

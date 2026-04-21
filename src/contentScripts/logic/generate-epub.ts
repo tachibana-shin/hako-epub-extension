@@ -5,7 +5,7 @@ import { EPub } from "epub-gen-memory/bundle"
 import type { CheerioAPI } from "cheerio"
 import { load } from "cheerio"
 import { del, get, set } from "idb-keyval"
-import type { FetcherOptions } from "../registry"
+import type { FetcherOptions, PromiseOr } from "../registry"
 import { editFilesInEPUB } from "./edit-files-in-epub"
 import { cleanChapter } from "./clean-chapter"
 import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
@@ -183,7 +183,8 @@ export async function generateEpub(
   cleaner: ($: CheerioAPI) => void,
   transformContainer: ($: CheerioAPI) => CheerioAPI,
   fetcherOptions: FetcherOptions,
-  preParse: (html: string) => string
+  preParse: (html: string) => PromiseOr<string>,
+  fetchChapter: (chapter: { name: string, href: string }) => PromiseLike<Response>
 ): Promise<Uint8Array> {
   const {
     title,
@@ -226,7 +227,7 @@ export async function generateEpub(
             return { title: chapter.name, content: "" }
           }
 
-          const response = await fetch(chapter.href)
+          const response = await fetchChapter(chapter)
           // if response is too many request wait 30 seconds
           if (response.status === 429 && idx < (fetcherOptions.retry ?? 10)) {
             await new Promise((resolve) =>
@@ -277,7 +278,7 @@ export async function generateEpub(
       author,
       publisher,
       description,
-      tocTitle: "Mục lục",
+      tocTitle: lang === "vi" ? "Mục lục" : "Index",
       lang,
       retryTimes: fetcherOptions.retry ?? 5_000,
       batchSize: fetcherOptions.concurrency ?? 5

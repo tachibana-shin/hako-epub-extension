@@ -27,6 +27,7 @@ const {
 
     return wrap.innerHTML
   },
+  fetchChapter: propFetchChapter = (chapter: { name: string, href: string }) => fetch(chapter.href),
   getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
   fetcherOptions: propFetcherOptions = {},
 
@@ -179,7 +180,8 @@ async function downloadVolume() {
     propCleaner,
     propTransformContainer,
     propFetcherOptions,
-    propPreParse
+    propPreParse,
+    propFetchChapter
   ).catch((err) => {
     console.error(err)
     toastShadow(`Error generating EPUB ${err}`, "error")
