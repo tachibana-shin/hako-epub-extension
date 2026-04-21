@@ -23,13 +23,21 @@ export default defineRegistry({
   targetQueries: {
     bookTitle: "h1",
     chapters: ".grid > a",
-    container: ".relative"
+    container: ($) => {
+      const html = $(".relative").html()
+
+      if (html) return html
+
+      return "<i>Chương này cần đăng nhập hoặc mua</i>"
+    }
   },
   title: (h3) => h3.querySelector("h3")!.textContent.trim(),
   description: () =>
     document
       .querySelector(".prose > .whitespace-pre-line")
       ?.textContent.trim() ?? "",
+  getChapterTitle: (a) =>
+    a.querySelector(".text-sm")?.textContent.trim() ?? "Unknown",
   lazyDom: true,
   fetcherOptions: {
     concurrency: 1,
