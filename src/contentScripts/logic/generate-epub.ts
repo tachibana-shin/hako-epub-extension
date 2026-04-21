@@ -39,7 +39,7 @@ class EPubExtend extends EPub {
         this.options.fonts.slice(i, i + this.options.batchSize).map((font) => {
           const d = retryAsync(
             () =>
-              fetch(`${font.url}#cors`).then(async (res) =>
+              fetch(`${font.url}#cors`, { credentials: 'include' }).then(async (res) =>
                 res.ok
                   ? res.blob()
                   : Promise.reject(new Error("Failed to fetch font"))
@@ -90,7 +90,7 @@ class EPubExtend extends EPub {
         this.images.slice(i, i + this.options.batchSize).map((image) => {
           const d = retryAsync(
             async () => {
-              const res = await fetch(`${image.url}#cors`)
+              const res = await fetch(`${image.url}#cors`, { credentials: 'include' })
 
               // --- Handle specific status codes ---
               if (res.status === 404 || res.status === 403) {
@@ -297,7 +297,8 @@ export async function generateEpub(
             cover.startsWith(location.origin) || cover.startsWith("/")
               ? ""
               : "#cors"
-          }`
+          }`,
+          { credentials: 'include' }
         ).then(async (res) =>
           res.ok
             ? {

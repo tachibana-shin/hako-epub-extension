@@ -27,7 +27,7 @@ const {
 
     return wrap.innerHTML
   },
-  fetchChapter: propFetchChapter = (chapter: { name: string, href: string }) => fetch(chapter.href),
+  fetchChapter: propFetchChapter = (chapter: { name: string, href: string }) => fetch(chapter.href, { credentials: 'include' }),
   getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
   fetcherOptions: propFetcherOptions = {},
 
