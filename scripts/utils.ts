@@ -1,6 +1,7 @@
 import { join, resolve } from "node:path"
 import process from "node:process"
 import fs from "node:fs"
+import { pathToFileURL } from "node:url"
 import { bgCyan, black } from "kolorist"
 
 import { type SiteConfig, defineRegistry } from "../registry/types"
@@ -28,7 +29,7 @@ export async function getRegistry() {
 
   const sites = await Promise.all(
     files.map(async (file) => {
-      const mod = await import(join(registryDir, file))
+      const mod = await import(pathToFileURL(resolve(join(registryDir, file))).href)
       return mod.default as SiteConfig
     })
   )

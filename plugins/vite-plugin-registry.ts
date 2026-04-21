@@ -1,5 +1,5 @@
 import fs from "node:fs"
-import { resolve } from "node:path"
+import { dirname, relative, resolve } from "node:path"
 import type { Plugin } from "vite"
 import { getRegistry, r } from "../scripts/utils"
 
@@ -31,7 +31,8 @@ export function registryPlugin(): Plugin {
         // Vite will handle these correctly.
         const imports = files
           .map(
-            (file, i) => `import site${i} from "${resolve(registryDir, file)}"`
+            (file, i) =>
+              `import site${i} from "${relative(dirname(import.meta.dirname), resolve(registryDir, file)).replace(/\\/g, "/")}"`
           )
           .join("\n")
         const exports = `export default [${files
