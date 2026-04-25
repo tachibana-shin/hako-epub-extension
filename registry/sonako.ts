@@ -11,14 +11,20 @@ export default defineRegistry({
       .replace("[]", "")
   },
   findBlocks:
-    "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), h3:has(+ figure + table), h3:has(+ figure + * + table)" +
-    ", .wds-tabber > .wds-tab__content > h3:has(+ .volume)",
+    "h3:has(+ ul), h3:has(+ figure + ul), h3:has(+ figure + * + ul), " +
+    "h3:has(+ figure + table), h3:has(+ figure + * + table), " +
+    "h3:has(+ p + ul), h3:has(+ p + * + ul), h3:has(+ p + table), h3:has(+ p + * + table), " +
+    ".wds-tabber > .wds-tab__content > h3:has(+ .volume)",
   findTarget: (h3) => {
     let ul = h3.nextElementSibling
 
     if (ul?.classList.contains("volume")) return ul as HTMLElement
 
     if (ul && ul.tagName === "FIGURE") {
+      ul = ul.nextElementSibling
+    }
+
+    if (ul && ul.tagName === "P") {
       ul = ul.nextElementSibling
     }
 
