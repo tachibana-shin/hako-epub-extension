@@ -2,7 +2,7 @@
   "name": "hako-epub",
   "displayName": "Hako EPub",
   "type": "module",
-  "version": "0.0.47",
+  "version": "0.0.0",
   "private": true,
   "description": "Tiện ích tải EPub trên website",
   "scripts": {
@@ -40,7 +40,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier -w .",
     "update-readme": "bun scripts/update-readme.ts",
-    "release": "bun update-readme && git add README.md && bumpp package.json --commit --push --tag"
+    "semantic-release": "semantic-release",
+    "release": "bun update-readme && git add README.md && bun run semantic-release"
   },
   "dependencies": {
     "@ameinhardt/unocss-preset-daisy": "^1.1.8",
@@ -65,6 +66,9 @@
     "@ffflorian/jszip-cli": "^3.8.5",
     "@iconify/json": "^2.2.239",
     "@playwright/test": "^1.46.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/file-saver": "^2.0.7",
     "@types/fs-extra": "^11.0.4",
     "@types/html-minifier-terser": "^7.0.2",
@@ -92,6 +96,7 @@
     "prettier": "^3.8.3",
     "rimraf": "^6.0.1",
     "sass": "^1.92.1",
+    "semantic-release": "^24.0.0",
     "simple-git-hooks": "^2.11.1",
     "typescript": "^5.5.4",
     "unocss": "^0.62.2",
