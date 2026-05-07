@@ -7,28 +7,28 @@ A browser extension that allows you to download EPub files directly from light n
 
 ## List website support
 <!-- @list website support -->
+- https://baka-tsuki.org
 - https://beetruyen.net
-- https://hako.vn
-- https://ln.hako.vn
-- https://hako.vip
+- https://dammy.me
 - https://docln.net
 - https://docln.sbs
-- https://sonako.fandom.com
-- https://phongphongtam2.com
+- https://foxaholic.com
+- https://hako.vip
+- https://hako.vn
 - https://ln.3ktan.com
-- https://msvtruyen.com
+- https://ln.hako.vn
 - https://luvevaland.co
 - https://mimieuuyen.com
-- https://valvrareteam.net
 - https://mintteanovel.com
-- https://www.foxaholic.com
-- https://foxaholic.com
-- https://baka-tsuki.org
-- https://www.baka-tsuki.org
-- https://novest.me
-- https://dammy.me
 - https://monkeydtruyen.com
+- https://msvtruyen.com
+- https://novest.me
 - https://otruyen.vn
+- https://phongphongtam2.com
+- https://sonako.fandom.com
+- https://valvrareteam.net
+- https://www.baka-tsuki.org
+- https://www.foxaholic.com
 <!-- @end -->
 
 ## Sponsor ☕
@@ -158,8 +158,10 @@ export default defineRegistry({
 | `fetcherOptions`     | `Object`             | _Optional_. Configuration for the downloader:                                                                         |
 |                      | `.concurrency`       | Number of simultaneous requests (default: 5).                                                                         |
 |                      | `.sleep`             | Delay in milliseconds after each chapter download.                                                                    |
-|                      | `.retry`             | Number of retry attempts for failed requests.                                                                         |
-|                      | `.delayError429`     | Delay in milliseconds when encountering a 429 (Rate Limit) error.                                                     |
+|                      | `.retry`             | Number of retry attempts for failed requests (chapters and cover).                                                   |
+|                      | `.delayError429`     | Delay in milliseconds when encountering a 429 (Rate Limit) error.                                                    |
+|                      | `.retryResource`     | Retry attempts for fonts/images. Use a lower value to avoid long waits for non-critical resources (default: 1).        |
+|                      | `.fetchTimeoutResource` | Timeout in milliseconds between retries for fonts/images (default: 100).                                          |
 | `lazyDom`            | `boolean`            | _Optional_. Set to `true` if the page loads content dynamically/lazily.                                               |
 
 ### 4. Use Utility Helpers

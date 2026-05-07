@@ -17,6 +17,7 @@ async function main() {
     const list = sites
       .map((site) => site.domains)
       .flat()
+      .sort()
       .map((domain) => `- https://${domain}`)
       .join("\n")
 
