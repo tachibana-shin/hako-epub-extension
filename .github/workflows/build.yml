@@ -8,7 +8,7 @@ on:
       - package.json
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -20,30 +20,8 @@ jobs:
         with:
           node-version: 25.8.1
 
-      - name: Build
-        run: bun i && bun run build && bun run pack && bun run build-firefox && bun run pack-firefox
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: extensions
-          path: |
-            chromium.zip
-            firefox.zip
-          retention-days: 1
-
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: extensions
-          path: |
-            chromium.zip
-            firefox.zip
+      - name: Pack
+        run: bun i && bun run build && bun pack && mv extension.crx chromium.crx && mv extension.xpi chromium.xpi && mv extension.zip chromium.zip && bun run build-firefox && bun pack-firefox && mv extension-firefox.crx firefox.crx && mv extension-firefox.xpi firefox.xpi && mv extension-firefox.zip firefox.zip
 
       - name: Publish to Mozilla Firefox
         uses: wdzeng/firefox-addon@v1
