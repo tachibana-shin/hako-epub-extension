@@ -5,6 +5,9 @@ export interface FetcherOptions {
   concurrency?: number
   delayError429?: number
   retry?: number
+  retryResource?: number
+  fetchTimeout?: number
+  fetchTimeoutResource?: number
   // time sleep after download one chapter
   sleep?: number
 }

@@ -11,11 +11,16 @@ import { cleanChapter } from "./clean-chapter"
 import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
 import UTMLinotypeZapfinoKTTTF from "~/assets/fonts/UTM_LinotypeZapfinoKT.ttf?uint8array&base64"
 
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms))
+}
+
 class EPubExtend extends EPub {
   constructor(
     options: Options,
     content: Content,
-    private readonly onProgress: (progress: number) => void
+    private readonly onProgress: (progress: number) => void,
+    private readonly fetcherOptions: FetcherOptions
   ) {
     super(options, content)
   }
@@ -24,6 +29,9 @@ class EPubExtend extends EPub {
     if (!this.options.fonts.length) return this.log("No fonts to download")
     const oebps = this.zip.folder("OEBPS")!
     const fonts = oebps.folder("fonts")!
+
+    const retryResource = this.fetcherOptions.retryResource ?? 3
+    const fetchTimeoutResource = this.fetcherOptions.fetchTimeoutResource ?? 100
 
     for (
       let i = 0;
@@ -39,14 +47,21 @@ class EPubExtend extends EPub {
         this.options.fonts.slice(i, i + this.options.batchSize).map((font) => {
           const d = retryAsync(
             () =>
-              fetch(`${font.url}#cors`, { credentials: 'include' }).then(async (res) =>
-                res.ok
-                  ? res.blob()
-                  : Promise.reject(new Error("Failed to fetch font"))
+              fetch(`${font.url}#cors`, { credentials: "include" }).then(
+                async (res) => {
+                  if (!res.ok) {
+                    if (res.status === 429) {
+                      await sleep(this.fetcherOptions.delayError429 ?? 60_000)
+                      throw new Error("Rate limited (429)")
+                    }
+                    throw new Error(`Failed to fetch font: ${res.status}`)
+                  }
+                  return res.blob()
+                }
               ),
             {
-              maxTry: this.options.retryTimes,
-              delay: this.options.fetchTimeout,
+              maxTry: retryResource,
+              delay: fetchTimeoutResource,
               onError: (e) => {
                 console.log(e)
                 return undefined
@@ -79,6 +94,9 @@ class EPubExtend extends EPub {
     const oebps = this.zip.folder("OEBPS")!
     const images = oebps.folder("images")!
 
+    const retryResource = this.fetcherOptions.retryResource ?? 3
+    const fetchTimeoutResource = this.fetcherOptions.fetchTimeoutResource ?? 100
+
     for (let i = 0; i < this.images.length; i += this.options.batchSize) {
       const imageContents: {
         data: Blob | string
@@ -90,7 +108,9 @@ class EPubExtend extends EPub {
         this.images.slice(i, i + this.options.batchSize).map((image) => {
           const d = retryAsync(
             async () => {
-              const res = await fetch(`${image.url}#cors`, { credentials: 'include' })
+              const res = await fetch(`${image.url}#cors`, {
+                credentials: "include"
+              })
 
               // --- Handle specific status codes ---
               if (res.status === 404 || res.status === 403) {
@@ -100,8 +120,8 @@ class EPubExtend extends EPub {
               }
 
               if (res.status === 429) {
-                // hmm sleep 1 minutes
-                await new Promise((r) => setTimeout(r, 60_000))
+                await sleep(this.fetcherOptions.delayError429 ?? 60_000)
+                throw new Error("Rate limited (429)")
               }
 
               if (!res.ok) {
@@ -111,8 +131,8 @@ class EPubExtend extends EPub {
               return await res.blob()
             },
             {
-              maxTry: this.options.retryTimes,
-              delay: this.options.fetchTimeout,
+              maxTry: retryResource,
+              delay: fetchTimeoutResource,
               onError: (e) => {
                 console.log(e)
                 return undefined
@@ -184,7 +204,10 @@ export async function generateEpub(
   transformContainer: ($: CheerioAPI) => CheerioAPI,
   fetcherOptions: FetcherOptions,
   preParse: (html: string) => PromiseOr<string>,
-  fetchChapter: (chapter: { name: string, href: string }) => PromiseLike<Response>
+  fetchChapter: (chapter: {
+    name: string
+    href: string
+  }) => PromiseLike<Response>
 ): Promise<Uint8Array> {
   const {
     title,
@@ -230,9 +253,7 @@ export async function generateEpub(
           const response = await fetchChapter(chapter)
           // if response is too many request wait 30 seconds
           if (response.status === 429 && idx < (fetcherOptions.retry ?? 10)) {
-            await new Promise((resolve) =>
-              setTimeout(resolve, fetcherOptions.delayError429 ?? 60_000)
-            )
+            await sleep(fetcherOptions.delayError429 ?? 60_000)
             return await retry(idx + 1)
           }
 
@@ -259,9 +280,7 @@ export async function generateEpub(
           onProgress((((index + 1) / chapters.length) * 50) / 100)
 
           if (fetcherOptions.sleep) {
-            await new Promise((resolve) =>
-              setTimeout(resolve, fetcherOptions.sleep)
-            )
+            await sleep(fetcherOptions.sleep)
           }
 
           return { title: chapter.name, content }
@@ -286,7 +305,8 @@ export async function generateEpub(
     results,
     (progress) => {
       onProgress(((progress + 1) * 50) / 100)
-    }
+    },
+    fetcherOptions
   ).genEpub()
 
   const coverImg = cover
@@ -298,7 +318,7 @@ export async function generateEpub(
               ? ""
               : "#cors"
           }`,
-          { credentials: 'include' }
+          { credentials: "include" }
         ).then(async (res) =>
           res.ok
             ? {
