@@ -89,13 +89,67 @@ class EPubExtend extends EPub {
     }
   }
 
+  private readonly imagePromiseCache = new Map<string, Promise<Blob | string>>()
+
+  async fetchImage(url: string, index: number): Promise<Blob | string> {
+    const cached = this.imagePromiseCache.get(url)
+    if (cached) return cached
+
+    const retryResource = this.fetcherOptions.retryResource ?? 3
+    const fetchTimeoutResource = this.fetcherOptions.fetchTimeoutResource ?? 100
+
+    const promise = retryAsync(
+      async () => {
+        const res = await fetch(`${url}#cors`, {
+          credentials: "include"
+        })
+
+        if (res.status === 404 || res.status === 403) {
+          this.warn(`Skip image (HTTP ${res.status}): ${url}`)
+          return ""
+        }
+
+        if (res.status === 429) {
+          await sleep(this.fetcherOptions.delayError429 ?? 60_000)
+          throw new Error("Rate limited (429)")
+        }
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch image: ${res.status}`)
+        }
+
+        return await res.blob()
+      },
+      {
+        maxTry: retryResource,
+        delay: fetchTimeoutResource,
+        onError: (e) => {
+          console.log(e)
+          return undefined
+        }
+      }
+    ).then((res) => {
+      this.log(`Downloaded image ${url}`)
+      this.onProgress(
+        (55 + ((index + 1) / (this.images.length || 1)) * 45) / 100
+      )
+      return res
+    })
+
+    this.imagePromiseCache.set(url, promise)
+
+    return this.options.ignoreFailedDownloads
+      ? promise.catch((reason) => {
+          this.warn(`Warning (image ${url}): Download failed`, reason)
+          return ""
+        })
+      : promise
+  }
+
   override async downloadAllImages() {
     if (!this.images.length) return this.log("No images to download")
     const oebps = this.zip.folder("OEBPS")!
     const images = oebps.folder("images")!
-
-    const retryResource = this.fetcherOptions.retryResource ?? 3
-    const fetchTimeoutResource = this.fetcherOptions.fetchTimeoutResource ?? 100
 
     for (let i = 0; i < this.images.length; i += this.options.batchSize) {
       const imageContents: {
@@ -105,56 +159,14 @@ class EPubExtend extends EPub {
         extension: string | null
         mediaType: string | null
       }[] = await Promise.all(
-        this.images.slice(i, i + this.options.batchSize).map((image) => {
-          const d = retryAsync(
-            async () => {
-              const res = await fetch(`${image.url}#cors`, {
-                credentials: "include"
-              })
-
-              // --- Handle specific status codes ---
-              if (res.status === 404 || res.status === 403) {
-                // Not found / forbidden → skip file creation
-                this.warn(`Skip image (HTTP ${res.status}): ${image.url}`)
-                return ""
-              }
-
-              if (res.status === 429) {
-                await sleep(this.fetcherOptions.delayError429 ?? 60_000)
-                throw new Error("Rate limited (429)")
-              }
-
-              if (!res.ok) {
-                throw new Error(`Failed to fetch image: ${res.status}`)
-              }
-
-              return await res.blob()
-            },
-            {
-              maxTry: retryResource,
-              delay: fetchTimeoutResource,
-              onError: (e) => {
-                console.log(e)
-                return undefined
-              }
-            }
-          ).then((res) => {
-            this.log(`Downloaded image ${image.url}`)
-            this.onProgress(
-              (55 + ((i + 1) / (this.images.length || 1)) * 45) / 100
-            )
-            return { ...image, data: res }
-          })
-          return this.options.ignoreFailedDownloads
-            ? d.catch((reason) => {
-                this.warn(
-                  `Warning (image ${image.url}): Download failed`,
-                  reason
-                )
-                return { ...image, data: "" }
-              })
-            : d
-        })
+        this.images
+          .slice(i, i + this.options.batchSize)
+          .map((image) =>
+            this.fetchImage(image.url, i).then((res) => ({
+              ...image,
+              data: res
+            }))
+          )
       )
       imageContents.forEach((image) => {
         if (!image.data) return
@@ -299,6 +311,7 @@ export async function generateEpub(
       description,
       tocTitle: lang === "vi" ? "Mục lục" : "Index",
       lang,
+      ignoreFailedDownloads: true,
       retryTimes: fetcherOptions.retry ?? 5_000,
       batchSize: fetcherOptions.concurrency ?? 5
     },

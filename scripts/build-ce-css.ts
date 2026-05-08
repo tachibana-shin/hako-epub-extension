@@ -1,10 +1,9 @@
 import { Buffer } from "node:buffer"
 import fs from "node:fs/promises"
-import { dirname, join } from "node:path"
+import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import c from "ansis"
 import chokidar from "chokidar"
-import { resolveModulePath } from "exsolve"
 import { transform } from "lightningcss"
 import { glob } from "tinyglobby"
 import { createGenerator } from "unocss"
@@ -18,7 +17,7 @@ const MINIFY = true
 
 export async function buildCSS() {
   const resetCSS = await fs.readFile(
-    resolveModulePath("@unocss/reset/tailwind.css"),
+    resolve(SRC_DIR, "../../node_modules", "@unocss/reset/tailwind.css"),
     "utf-8"
   )
 
