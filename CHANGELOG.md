@@ -1,3 +1,15 @@
+# [0.2.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.1.1...v0.2.0) (2026-05-08)
+
+
+### Bug Fixes
+
+* **foxaholic:** remove unwanted images ([b031fec](https://github.com/tachibana-shin/hako-epub-extension/commit/b031fecb5f1620e84d5c2e9aecfb03e893b3612a))
+
+
+### Features
+
+* improve epub image download robustness ([09182fc](https://github.com/tachibana-shin/hako-epub-extension/commit/09182fc1cf04501cc7b96a7877249506cbba6b6f))
+
 ## [0.1.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.1.0...v0.1.1) (2026-05-08)
 
 
