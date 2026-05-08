@@ -26,8 +26,10 @@ export default defineRegistry({
     )
       .map((v) => v.textContent.trim())
       .join("\n") ?? "",
-  cleaner: ($) =>
+  cleaner: ($) => {
     $(
       '.foxaholic-bidgear-before-content-1x1 > div[id^="bg-"], .foxaholic-bidgear-before-content-1x1 > div[id^="bg-"] ~ h1, .foxaholic-bidgear-before-content-1x1 > div[id^="bg-"] ~ h1 + h2'
     ).remove()
+    $('img[data-src~="zo4eIQiA.png"]').remove()
+  }
 })
