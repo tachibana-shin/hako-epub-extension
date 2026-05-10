@@ -46,19 +46,29 @@ class EPubExtend extends EPub {
       }[] = await Promise.all(
         this.options.fonts.slice(i, i + this.options.batchSize).map((font) => {
           const d = retryAsync(
-            () =>
-              fetch(`${font.url}#cors`, { credentials: "include" }).then(
-                async (res) => {
-                  if (!res.ok) {
-                    if (res.status === 429) {
-                      await sleep(this.fetcherOptions.delayError429 ?? 60_000)
-                      throw new Error("Rate limited (429)")
-                    }
-                    throw new Error(`Failed to fetch font: ${res.status}`)
+            () => {
+              // if url same in location.href domain not required #cors else not credentials
+              const url =
+                font.url.startsWith(location.origin) || font.url.startsWith("/")
+                  ? font.url
+                  : `${font.url}#cors`
+              return fetch(url, {
+                credentials:
+                  font.url.startsWith(location.origin) ||
+                  font.url.startsWith("/")
+                    ? "include"
+                    : "same-origin"
+              }).then(async (res) => {
+                if (!res.ok) {
+                  if (res.status === 429) {
+                    await sleep(this.fetcherOptions.delayError429 ?? 60_000)
+                    throw new Error("Rate limited (429)")
                   }
-                  return res.blob()
+                  throw new Error(`Failed to fetch font: ${res.status}`)
                 }
-              ),
+                return res.blob()
+              })
+            },
             {
               maxTry: retryResource,
               delay: fetchTimeoutResource,
@@ -100,8 +110,16 @@ class EPubExtend extends EPub {
 
     const promise = retryAsync(
       async () => {
-        const res = await fetch(`${url}#cors`, {
-          credentials: "include"
+        // if url same in location.href domain not required #cors else not credentials
+        const resolvedUrl =
+          url.startsWith(location.origin) || url.startsWith("/")
+            ? url
+            : `${url}#cors`
+        const res = await fetch(resolvedUrl, {
+          credentials:
+            url.startsWith(location.origin) || url.startsWith("/")
+              ? "include"
+              : "same-origin"
         })
 
         if (res.status === 404 || res.status === 403) {
@@ -159,14 +177,12 @@ class EPubExtend extends EPub {
         extension: string | null
         mediaType: string | null
       }[] = await Promise.all(
-        this.images
-          .slice(i, i + this.options.batchSize)
-          .map((image) =>
-            this.fetchImage(image.url, i).then((res) => ({
-              ...image,
-              data: res
-            }))
-          )
+        this.images.slice(i, i + this.options.batchSize).map((image) =>
+          this.fetchImage(image.url, i).then((res) => ({
+            ...image,
+            data: res
+          }))
+        )
       )
       imageContents.forEach((image) => {
         if (!image.data) return
@@ -324,14 +340,19 @@ export async function generateEpub(
 
   const coverImg = cover
     ? await retryAsync(
-      () =>
-        fetch(
+      () => {
+        return fetch(
           `${cover}${
             cover.startsWith(location.origin) || cover.startsWith("/")
               ? ""
               : "#cors"
           }`,
-          { credentials: "include" }
+          {
+            credentials:
+                cover.startsWith(location.origin) || cover.startsWith("/")
+                  ? "include"
+                  : "same-origin"
+          }
         ).then(async (res) =>
           res.ok
             ? {
@@ -339,7 +360,8 @@ export async function generateEpub(
                 ext: res.headers.get("content-type")?.split("/").at(-1)
               }
             : Promise.reject(await res.text())
-        ),
+        )
+      },
       { maxTry: fetcherOptions.retry ?? 5 }
     ).catch((error) => {
       console.error(`Error fetching cover image: ${error}`)
