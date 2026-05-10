@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.2.0...v0.2.1) (2026-05-10)
+
+
+### Bug Fixes
+
+* **fetch:** improve CORS and credentials handling ([d712e11](https://github.com/tachibana-shin/hako-epub-extension/commit/d712e1183c3b6d5a6ac75cb799f2fa429d54e5c5)), closes [#cors](https://github.com/tachibana-shin/hako-epub-extension/issues/cors)
+
 # [0.2.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.1.1...v0.2.0) (2026-05-08)
 
 
