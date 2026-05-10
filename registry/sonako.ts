@@ -51,6 +51,13 @@ export default defineRegistry({
         ?.getAttribute("data-src")
         ?.split("/revision/")[0]
     }
+    const prev = h3.previousElementSibling
+    if (prev?.tagName === "FIGURE") {
+      return prev
+        .querySelector("img")
+        ?.getAttribute("data-src")
+        ?.split("/revision/")[0]
+    }
     return undefined
   },
   publisher: "sonako.fandom.com",
@@ -67,6 +74,12 @@ export default defineRegistry({
     $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
 
     $("h2:first-child:has(.mw-headline)").remove()
+
+    $("img").each((_, img) => {
+      const $img = $(img)
+      $img.attr("src", $img.attr("src")?.split("/revision/")[0])
+      $img.attr("data-src", $img.attr("data-src")?.split("/revision/")[0])
+    })
   },
   title: (h3) => h3.textContent.trim().replace("[]", "")
 })

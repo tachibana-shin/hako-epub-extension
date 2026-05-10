@@ -18,10 +18,20 @@ export default defineRegistry({
     // 表紙画像の抽出
     const ul = h3.nextElementSibling
     if (ul && ul.tagName === "FIGURE") {
-      return ul.querySelector("img")?.getAttribute("src") ?? undefined
+      return (
+        ul
+          .querySelector("img")
+          ?.getAttribute("src")
+          ?.replace(/(width|height)=\d*/gi, "width=800") ?? undefined
+      )
     }
     if (ul && ul.classList.contains("volume")) {
-      return ul.querySelector("img")?.getAttribute("src") ?? undefined
+      return (
+        ul
+          .querySelector("img")
+          ?.getAttribute("src")
+          ?.replace(/(width|height)=\d*/gi, "width=800") ?? undefined
+      )
     }
     return undefined
   },
@@ -32,6 +42,18 @@ export default defineRegistry({
     $("#toc + h2, #toc, .mw-parser-output[lang] + h2").remove()
 
     $("h2:first-child:has(.mw-headline)").remove()
+
+    $("img").each((_, img) => {
+      const $img = $(img)
+      $img.attr(
+        "src",
+        $img.attr("src")?.replace(/(width|height)=\d*/gi, "width=800")
+      )
+      $img.attr(
+        "data-src",
+        $img.attr("data-src")?.replace(/(width|height)=\d*/gi, "width=800")
+      )
+    })
   },
   title: (h3) =>
     Array.from(h3.querySelector(".mw-headline")?.childNodes ?? [])
