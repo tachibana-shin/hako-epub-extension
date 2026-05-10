@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.3.0...v0.3.1) (2026-05-10)
+
+
+### Bug Fixes
+
+* remove h2 title in chapter sonako ([cfe4559](https://github.com/tachibana-shin/hako-epub-extension/commit/cfe4559d0cd79a31897c25a9929bbb1ebbc42f2b))
+
 # [0.3.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.2.1...v0.3.0) (2026-05-10)
 
 
