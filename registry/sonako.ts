@@ -74,6 +74,7 @@ export default defineRegistry({
     $("h3:contains(Ghi chú):not(h3:has(+ .mw-references-wrap))").remove()
 
     $("h2:first-child:has(.mw-headline)").remove()
+    $(".mw-parser-output > h2:first-child").remove()
 
     $("img").each((_, img) => {
       const $img = $(img)
