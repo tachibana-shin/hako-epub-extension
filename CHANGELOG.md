@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.2.1...v0.3.0) (2026-05-10)
+
+
+### Features
+
+* **registry:** enhance image parsing ([c671f3f](https://github.com/tachibana-shin/hako-epub-extension/commit/c671f3fcdd2bff95c8627e77bc7bfac56e77fed5))
+
 ## [0.2.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.2.0...v0.2.1) (2026-05-10)
 
 
