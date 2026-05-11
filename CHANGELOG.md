@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.3.1...v0.4.0) (2026-05-11)
+
+
+### Features
+
+* **hako.vip:** add hako.vip registry ([2c4cdb5](https://github.com/tachibana-shin/hako-epub-extension/commit/2c4cdb56b0b625cc70525220517f620eabde6aa0))
+
 ## [0.3.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.3.0...v0.3.1) (2026-05-10)
 
 
