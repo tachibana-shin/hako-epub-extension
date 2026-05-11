@@ -27,8 +27,15 @@ const {
 
     return wrap.innerHTML
   },
-  fetchChapter: propFetchChapter = (chapter: { name: string, href: string }) => fetch(chapter.href, { credentials: 'include' }),
+  fetchChapter: propFetchChapter = (chapter: { name: string, href: string }) =>
+    fetch(chapter.href, { credentials: "include" }),
   getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
+  getChapterHref = (anchor: HTMLElement) => anchor.getAttribute("href")!,
+  getChaptersList: propGetChaptersList = (source, target) =>
+    Array.from(target.querySelectorAll<HTMLElement>(qChapters)).map((anchor) => ({
+      name: getChapterTitle(anchor),
+      href: getChapterHref(anchor)
+    })),
   fetcherOptions: propFetcherOptions = {},
 
   publisher,
@@ -53,15 +60,8 @@ const slug = computed(() => {
 
   return slug + configTitle(source, targetEl)
 })
-function getChapters() {
-  const chapters = Array.from(
-    targetEl.querySelectorAll<HTMLElement>(qChapters)
-  ).map((anchor) => {
-    return {
-      name: getChapterTitle(anchor),
-      href: anchor.getAttribute("href")!
-    }
-  })
+async function getChapters() {
+  const chapters = await propGetChaptersList(source, targetEl as HTMLElement)
   if (chapters.length === 0) return chapters
 
   const numFirst = Number.parseInt(chapters[0].name.replace(/\D/g, ""))
@@ -86,7 +86,7 @@ watch(
   async (newChapters) => {
     const hashBuffer = await crypto.subtle.digest(
       "SHA-256",
-      new TextEncoder().encode(JSON.stringify(newChapters))
+      new TextEncoder().encode(JSON.stringify(await newChapters))
     )
     chaptersHash.value = Array.from(new Uint8Array(hashBuffer))
       .map((b) => b.toString(16).padStart(2, "0"))
@@ -168,7 +168,7 @@ async function downloadVolume() {
     description,
     cover,
     chapterNumber,
-    chapters: getChapters()
+    chapters: await getChapters()
   }
   const { buffer } = await generateEpub(
     options,
@@ -216,7 +216,7 @@ async function downloadD() {
   }
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   // eslint-disable-next-line no-alert
   if (!confirm(`Are you sure delete cache this?`)) return
 
@@ -225,7 +225,7 @@ function confirmDelete() {
     `${slug.value}_hash`,
     `${slug.value}_file`,
 
-    ...getChapters().map((chapter) => `cached_${chapter.href}`)
+    ...(await getChapters()).map((chapter) => `cached_${chapter.href}`)
   ])
 
   downloadDone.value = DownloadState.None

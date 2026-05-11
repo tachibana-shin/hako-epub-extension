@@ -37,7 +37,9 @@ export interface SiteConfig {
   cleaner?: ($: CheerioAPI) => void
   transformContainer?: ($: CheerioAPI) => CheerioAPI
   preParse?: (html: string) => PromiseOr<string>
+  getChaptersList?: (source: HTMLElement, target: HTMLElement) => PromiseLike<{ name: string, href: string }[]>
   getChapterTitle?: (anchor: HTMLElement) => string
+  getChapterHref?: (anchor: HTMLElement) => string
   fetchChapter?: (chapter: { name: string, href: string }) => PromiseLike<Response>
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean

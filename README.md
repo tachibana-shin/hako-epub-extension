@@ -14,6 +14,7 @@ A browser extension that allows you to download EPub files directly from light n
 - https://docln.sbs
 - https://foxaholic.com
 - https://hako.vip
+- https://hako.vip
 - https://hako.vn
 - https://ln.3ktan.com
 - https://ln.hako.vn
@@ -155,6 +156,8 @@ export default defineRegistry({
 | `transformContainer` | `Function`           | _Optional_. Hook to transform the content container (e.g., decryption logic).                                         |
 | `preParse`           | `Function`           | _Optional_. Pre-process the raw HTML string before it is parsed by Cheerio.                                           |
 | `getChapterTitle`    | `Function`           | _Optional_. Function to extract a custom chapter title from the link element.                                         |
+| `getChapterHref`    | `Function`           | _Optional_. Function to extract a custom chapter href from the link element.                                         |
+| `fetchChapter`       | `Function`           | _Optional_. Function to fetch the chapter content.                                                                    |
 | `fetcherOptions`     | `Object`             | _Optional_. Configuration for the downloader:                                                                         |
 |                      | `.concurrency`       | Number of simultaneous requests (default: 5).                                                                         |
 |                      | `.sleep`             | Delay in milliseconds after each chapter download.                                                                    |
