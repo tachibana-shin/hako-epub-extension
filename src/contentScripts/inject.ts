@@ -44,6 +44,15 @@ function injector() {
   )
   if (!config) return console.warn("This domain not exists registry")
 
+  if (config.customStyle) {
+    if (document.getElementById("hako-epub-extension-style")) return
+
+    const style = document.createElement("style")
+    style.setAttribute("id", "hako-epub-extension-style")
+    style.textContent = config.customStyle
+    document.head.appendChild(style)
+  }
+
   if (config.lazyDom && !cron) {
     cron = true
     setInterval(() => bind(config), 1e3)

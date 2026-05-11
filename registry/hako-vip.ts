@@ -5,6 +5,7 @@ const storeVolumeList = new Map<string, Promise<Volume[]>>()
 export default defineRegistry({
   domains: ["hako.vip"],
   lang: "vi",
+  customStyle: `.volume-title { margin-right: auto }`,
   findAuthor() {
     return document
       .querySelector(".book-header-meta > span:first-child")
@@ -46,7 +47,10 @@ export default defineRegistry({
 
     let listPromise = storeVolumeList.get(bookUuid)
     if (listPromise === void 0) {
-      listPromise = getAllVolumesByBook("TuLamDB", bookUuid)
+      listPromise = getAllVolumesByBook(
+        localStorage.activeProfile === "sync" ? "TuLamDB_sync" : "TuLamDB",
+        bookUuid
+      )
       storeVolumeList.set(bookUuid, listPromise)
     }
 
@@ -61,7 +65,10 @@ export default defineRegistry({
     if (currentVolume === void 0)
       throw new Error("Can't find volume in storage")
 
-    const chapters = await getChaptersByVolume("TuLamDB", currentVolume.id)
+    const chapters = await getChaptersByVolume(
+      localStorage.activeProfile === "sync" ? "TuLamDB_sync" : "TuLamDB",
+      currentVolume.id
+    )
 
     return chapters
       .sort((a, b) => a.order - b.order)
@@ -70,7 +77,9 @@ export default defineRegistry({
           .trim()
           .replace(/Discord\s+Facebook\s+(?:-+>)?/, "")
           .split(/\n{2,}/g)
-          .map((paragraph) => `<p>${paragraph.trim().replace(/\n/g, "<br>")}</p>`)
+          .map(
+            (paragraph) => `<p>${paragraph.trim().replace(/\n/g, "<br>")}</p>`
+          )
           .join("")
           .trim()
 

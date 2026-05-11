@@ -14,6 +14,7 @@ export interface FetcherOptions {
 export interface SiteConfig {
   domains: string[]
   lang: string | ((h3: HTMLElement) => string)
+  customStyle?: string
   /**
    * @description Accept return string format "Author 1 | Author 2 | ..."
    */
