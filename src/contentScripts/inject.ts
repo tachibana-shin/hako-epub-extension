@@ -34,7 +34,7 @@ function bind(config: SiteConfig) {
   })
 }
 
-let cron = false
+let watching = false
 function injector() {
   const hostname = location.hostname.replace(/^www\./, "")
   const config = registry.find(
@@ -53,9 +53,19 @@ function injector() {
     document.head.appendChild(style)
   }
 
-  if (config.lazyDom && !cron) {
-    cron = true
-    setInterval(() => bind(config), 1e3)
+  if (config.lazyDom && !watching) {
+    watching = true
+    let pending = true
+    const observer = new MutationObserver(() => {
+      if (pending) {
+        pending = false
+        requestAnimationFrame(() => {
+          bind(config)
+          pending = true
+        })
+      }
+    })
+    observer.observe(document.body, { childList: true, subtree: true })
   }
 
   bind(config)
