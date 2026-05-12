@@ -1,3 +1,15 @@
+# [0.5.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.4.0...v0.5.0) (2026-05-12)
+
+
+### Features
+
+* Add custom styles and profile-based DB ([46b908c](https://github.com/tachibana-shin/hako-epub-extension/commit/46b908cd1b533acc81c96bc850104515ec62f707))
+
+
+### Performance Improvements
+
+* **inject:** replace setInterval with MutationObserver ([c304583](https://github.com/tachibana-shin/hako-epub-extension/commit/c304583a4de730ac794d0bc61de84c89db66f6f8))
+
 # [0.4.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.3.1...v0.4.0) (2026-05-11)
 
 
