@@ -5,7 +5,8 @@ export default defineRegistry({
     // 著者名の抽出
     return Array.from(document.querySelectorAll("h2"))
       .find((t) => t.textContent?.includes("viết bởi"))
-      ?.textContent?.split("viết bởi")
+      ?.textContent
+      ?.split("viết bởi")
       .at(-1)
       ?.trim()
       .replace("[]", "")
@@ -43,20 +44,20 @@ export default defineRegistry({
       return ul
         .querySelector("img")
         ?.getAttribute("data-src")
-        ?.split("/revision/")[0]
+        ?.replace(/\/scale-to-width-down\/\d+/, "")
     }
     if (ul && ul.classList.contains("volume")) {
       return ul
         .querySelector("img")
         ?.getAttribute("data-src")
-        ?.split("/revision/")[0]
+        ?.replace(/\/scale-to-width-down\/\d+/, "")
     }
     const prev = h3.previousElementSibling
     if (prev?.tagName === "FIGURE") {
       return prev
         .querySelector("img")
         ?.getAttribute("data-src")
-        ?.split("/revision/")[0]
+        ?.replace(/\/scale-to-width-down\/\d+/, "")
     }
     return undefined
   },
@@ -78,8 +79,14 @@ export default defineRegistry({
 
     $("img").each((_, img) => {
       const $img = $(img)
-      $img.attr("src", $img.attr("src")?.split("/revision/")[0])
-      $img.attr("data-src", $img.attr("data-src")?.split("/revision/")[0])
+      $img.attr(
+        "src",
+        $img.attr("src")?.replace(/\/scale-to-width-down\/\d+/, "")
+      )
+      $img.attr(
+        "data-src",
+        $img.attr("data-src")?.replace(/\/scale-to-width-down\/\d+/, "")
+      )
     })
   },
   title: (h3) => h3.textContent.trim().replace("[]", "")
