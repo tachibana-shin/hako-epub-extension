@@ -1,15 +1,15 @@
+import type { CheerioAPI } from "cheerio"
+import type { Content, Options } from "epub-gen-memory"
+import type { FetcherOptions, PromiseOr } from "../registry"
+import { load } from "cheerio"
+import { EPub } from "epub-gen-memory/bundle"
+import { del, get, set } from "idb-keyval"
 import pLimit from "p-limit"
 import { retryAsync } from "ts-retry"
-import type { Content, Options } from "epub-gen-memory"
-import { EPub } from "epub-gen-memory/bundle"
-import type { CheerioAPI } from "cheerio"
-import { load } from "cheerio"
-import { del, get, set } from "idb-keyval"
-import type { FetcherOptions, PromiseOr } from "../registry"
-import { editFilesInEPUB } from "./edit-files-in-epub"
-import { cleanChapter } from "./clean-chapter"
 import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
 import UTMLinotypeZapfinoKTTTF from "~/assets/fonts/UTM_LinotypeZapfinoKT.ttf?uint8array&base64"
+import { cleanChapter } from "./clean-chapter"
+import { editFilesInEPUB } from "./edit-files-in-epub"
 
 function sleep(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms))
@@ -33,11 +33,7 @@ class EPubExtend extends EPub {
     const retryResource = this.fetcherOptions.retryResource ?? 3
     const fetchTimeoutResource = this.fetcherOptions.fetchTimeoutResource ?? 100
 
-    for (
-      let i = 0;
-      i < this.options.fonts.length;
-      i += this.options.batchSize
-    ) {
+    for (let i = 0; i < this.options.fonts.length; i += this.options.batchSize) {
       const fontContents: {
         filename: string
         url: string
@@ -54,8 +50,7 @@ class EPubExtend extends EPub {
                   : `${font.url}#cors`
               return fetch(url, {
                 credentials:
-                  font.url.startsWith(location.origin) ||
-                  font.url.startsWith("/")
+                  font.url.startsWith(location.origin) || font.url.startsWith("/")
                     ? "include"
                     : "same-origin"
               }).then(async (res) => {
@@ -79,9 +74,7 @@ class EPubExtend extends EPub {
             }
           ).then((res) => {
             this.log(`Downloaded font ${font.url}`)
-            this.onProgress(
-              (5 + ((i + 1) / (this.options.fonts.length || 1)) * 45) / 100
-            )
+            this.onProgress((5 + ((i + 1) / (this.options.fonts.length || 1)) * 45) / 100)
 
             return { ...font, data: res }
           })
@@ -112,14 +105,10 @@ class EPubExtend extends EPub {
       async () => {
         // if url same in location.href domain not required #cors else not credentials
         const resolvedUrl =
-          url.startsWith(location.origin) || url.startsWith("/")
-            ? url
-            : `${url}#cors`
+          url.startsWith(location.origin) || url.startsWith("/") ? url : `${url}#cors`
         const res = await fetch(resolvedUrl, {
           credentials:
-            url.startsWith(location.origin) || url.startsWith("/")
-              ? "include"
-              : "same-origin"
+            url.startsWith(location.origin) || url.startsWith("/") ? "include" : "same-origin"
         })
 
         if (res.status === 404 || res.status === 403) {
@@ -148,9 +137,7 @@ class EPubExtend extends EPub {
       }
     ).then((res) => {
       this.log(`Downloaded image ${url}`)
-      this.onProgress(
-        (55 + ((index + 1) / (this.images.length || 1)) * 45) / 100
-      )
+      this.onProgress((55 + ((index + 1) / (this.images.length || 1)) * 45) / 100)
       return res
     })
 
@@ -232,10 +219,7 @@ export async function generateEpub(
   transformContainer: ($: CheerioAPI) => CheerioAPI,
   fetcherOptions: FetcherOptions,
   preParse: (html: string) => PromiseOr<string>,
-  fetchChapter: (chapter: {
-    name: string
-    href: string
-  }) => PromiseLike<Response>
+  fetchChapter: (chapter: { name: string; href: string }) => PromiseLike<Response>
 ): Promise<Uint8Array> {
   const {
     title,
@@ -340,33 +324,29 @@ export async function generateEpub(
 
   const coverImg = cover
     ? await retryAsync(
-      () => {
-        return fetch(
-          `${cover}${
-            cover.startsWith(location.origin) || cover.startsWith("/")
-              ? ""
-              : "#cors"
-          }`,
-          {
-            credentials:
+        () => {
+          return fetch(
+            `${cover}${cover.startsWith(location.origin) || cover.startsWith("/") ? "" : "#cors"}`,
+            {
+              credentials:
                 cover.startsWith(location.origin) || cover.startsWith("/")
                   ? "include"
                   : "same-origin"
-          }
-        ).then(async (res) =>
-          res.ok
-            ? {
-                buffer: await res.arrayBuffer(),
-                ext: res.headers.get("content-type")?.split("/").at(-1)
-              }
-            : Promise.reject(await res.text())
-        )
-      },
-      { maxTry: fetcherOptions.retry ?? 5 }
-    ).catch((error) => {
-      console.error(`Error fetching cover image: ${error}`)
-      return undefined
-    })
+            }
+          ).then(async (res) =>
+            res.ok
+              ? {
+                  buffer: await res.arrayBuffer(),
+                  ext: res.headers.get("content-type")?.split("/").at(-1)
+                }
+              : Promise.reject(await res.text())
+          )
+        },
+        { maxTry: fetcherOptions.retry ?? 5 }
+      ).catch((error) => {
+        console.error(`Error fetching cover image: ${error}`)
+        return undefined
+      })
     : undefined
 
   const cBuffer = await editFilesInEPUB(await buffer.arrayBuffer(), {
@@ -385,9 +365,7 @@ ${tags.map((name) => `<dc:subject>${name}</dc:subject>`).join("\n")}
 <item id="cover.${coverImg.ext}" href="cover.${coverImg.ext}" media-type="image/${coverImg.ext}" properties="cover-image"/>
     `).prependTo($("manifest"))
         $('<itemref idref="titlepage">').prependTo($("spine"))
-        $(
-          `<reference href="titlepage.xhtml" title="Cover" type="cover"/>`
-        ).appendTo($("guide"))
+        $(`<reference href="titlepage.xhtml" title="Cover" type="cover"/>`).appendTo($("guide"))
       }
 
       return $.html()

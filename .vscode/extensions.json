@@ -3,7 +3,7 @@
     "vue.volar",
     "antfu.iconify",
     "antfu.unocss",
-    "dbaeumer.vscode-eslint",
+    "oxc.oxlint-vscode",
     "csstools.postcss"
   ]
 }

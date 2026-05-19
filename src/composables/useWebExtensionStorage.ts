@@ -1,12 +1,14 @@
-import { StorageSerializers } from "@vueuse/core"
-import { pausableWatch, toValue, tryOnScopeDispose } from "@vueuse/shared"
-import { ref, shallowRef } from "vue-demi"
-import { storage } from "webextension-polyfill"
-
 import type { StorageLikeAsync, UseStorageAsyncOptions } from "@vueuse/core"
-import type { MaybeRefOrGetter, RemovableRef } from "@vueuse/shared"
+import type { RemovableRef } from "@vueuse/shared"
+import type { MaybeRefOrGetter } from "vue"
 import type { Ref } from "vue-demi"
 import type { Storage } from "webextension-polyfill"
+
+import { StorageSerializers } from "@vueuse/core"
+import { pausableWatch, tryOnScopeDispose } from "@vueuse/shared"
+import { toValue } from "vue"
+import { ref, shallowRef } from "vue-demi"
+import { storage } from "webextension-polyfill"
 
 export type WebExtensionStorageOptions<T> = UseStorageAsyncOptions<T>
 
@@ -58,7 +60,7 @@ export function useWebExtensionStorage<T>(
   key: string,
   initialValue: MaybeRefOrGetter<T>,
   options: WebExtensionStorageOptions<T> = {}
-): { data: RemovableRef<T>, dataReady: Promise<T> } {
+): { data: RemovableRef<T>; dataReady: Promise<T> } {
   const {
     flush = "pre",
     deep = true,
@@ -78,38 +80,31 @@ export function useWebExtensionStorage<T>(
   const data = (shallow ? shallowRef : ref)(initialValue) as Ref<T>
   const serializer = options.serializer ?? StorageSerializers[type]
 
-  async function read(event?: { key: string, newValue: string | null }) {
+  async function read(event?: { key: string; newValue: string | null }) {
     if (event && event.key !== key) return
 
     try {
-      const rawValue = event
-        ? event.newValue
-        : await storageInterface.getItem(key)
+      const rawValue = event ? event.newValue : await storageInterface.getItem(key)
       if (rawValue == null) {
         data.value = rawInit
         if (writeDefaults && rawInit !== null)
           await storageInterface.setItem(key, await serializer.write(rawInit))
-      }
-      else if (mergeDefaults) {
+      } else if (mergeDefaults) {
         const value = (await serializer.read(rawValue)) as T
         if (typeof mergeDefaults === "function") {
           data.value = mergeDefaults(value, rawInit)
-        }
-        else if (type === "object" && !Array.isArray(value)) {
+        } else if (type === "object" && !Array.isArray(value)) {
           data.value = {
             ...(rawInit as Record<keyof unknown, unknown>),
             ...(value as Record<keyof unknown, unknown>)
           } as T
-        }
-        else {
+        } else {
           data.value = value
         }
-      }
-      else {
+      } else {
         data.value = (await serializer.read(rawValue)) as T
       }
-    }
-    catch (error) {
+    } catch (error) {
       onError(error)
     }
   }
@@ -125,21 +120,16 @@ export function useWebExtensionStorage<T>(
       await (data.value == null
         ? storageInterface.removeItem(key)
         : storageInterface.setItem(key, await serializer.write(data.value)))
-    }
-    catch (error) {
+    } catch (error) {
       onError(error)
     }
   }
 
-  const { pause: pauseWatch, resume: resumeWatch } = pausableWatch(
-    data,
-    write,
-    {
-      flush,
-      deep,
-      eventFilter
-    }
-  )
+  const { pause: pauseWatch, resume: resumeWatch } = pausableWatch(data, write, {
+    flush,
+    deep,
+    eventFilter
+  })
 
   if (listenToStorageChanges) {
     const listener = async (changes: Record<string, Storage.StorageChange>) => {
@@ -151,8 +141,7 @@ export function useWebExtensionStorage<T>(
             newValue: change.newValue as string | null
           })
         }
-      }
-      finally {
+      } finally {
         resumeWatch()
       }
     }

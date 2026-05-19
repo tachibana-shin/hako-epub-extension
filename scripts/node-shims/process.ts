@@ -1,0 +1,25 @@
+const process = {
+  env: { NODE_ENV: "production" },
+  cwd: () => "/",
+  platform: "browser",
+  arch: "javascript",
+  version: "",
+  versions: { node: "" },
+  nextTick: (cb: Function, ...args: any[]) => Promise.resolve().then(() => cb(...args)),
+  browser: true,
+  stdout: { write: () => true },
+  stderr: { write: () => true },
+  argv: [],
+  pid: 0,
+  ppid: 0,
+  title: "browser",
+  exit: () => {},
+  on: () => {},
+  once: () => {},
+  emit: () => false,
+  listeners: () => [],
+  removeListener: () => {},
+  hasUncaughtExceptionCaptureCallback: () => false,
+  umask: () => 0
+}
+export default process

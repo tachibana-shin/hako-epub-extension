@@ -1,6 +1,6 @@
+import type { Plugin } from "vite"
 import fs from "node:fs"
 import { dirname, relative, resolve } from "node:path"
-import type { Plugin } from "vite"
 import { getRegistry, r } from "../scripts/utils"
 
 export function registryPlugin(): Plugin {
@@ -22,10 +22,7 @@ export function registryPlugin(): Plugin {
         const registryDir = r("registry")
         const files = fs
           .readdirSync(registryDir)
-          .filter(
-            (file) =>
-              file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts"
-          )
+          .filter((file) => file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts")
 
         // Use absolute paths for imports in the virtual module.
         // Vite will handle these correctly.
@@ -35,9 +32,7 @@ export function registryPlugin(): Plugin {
               `import site${i} from "${relative(dirname(import.meta.dirname), resolve(registryDir, file)).replace(/\\/g, "/")}"`
           )
           .join("\n")
-        const exports = `export default [${files
-          .map((_, i) => `site${i}`)
-          .join(", ")}]`
+        const exports = `export default [${files.map((_, i) => `site${i}`).join(", ")}]`
 
         return `${imports}\n${exports}`
       }

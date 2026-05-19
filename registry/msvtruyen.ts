@@ -1,10 +1,7 @@
 export default defineRegistry({
   domains: ["msvtruyen.com"],
   lang: "vi",
-  findAuthor: () =>
-    Array.from($$("a", contains("p", "Tác Giả:"))).map((a) =>
-      a.textContent.trim()
-    ),
+  findAuthor: () => Array.from($$("a", contains("p", "Tác Giả:"))).map((a) => a.textContent.trim()),
   findBlocks: "#chapters .heading",
   findTarget: (heading) => heading.nextElementSibling! as HTMLElement,
   extractCover: () => $("img.img-fluid")?.getAttribute("src") ?? undefined,
@@ -26,7 +23,6 @@ export default defineRegistry({
     bookTitle: "h1",
     chapters: "tr a",
     chaptersReverse: true,
-    container: ($) =>
-      $("#chapter-content").html() || "<i>Chương này đã bị khoá</i>"
+    container: ($) => $("#chapter-content").html() || "<i>Chương này đã bị khoá</i>"
   }
 })

@@ -8,9 +8,7 @@ export default defineRegistry({
       .join(", "),
   findBlocks: `.space-y-4 > [data-orientation="vertical"] > h3 > button`,
   findTarget: (h3) =>
-    h3
-      .closest("div[data-orientation='vertical']")!
-      .querySelector("div[id^=radix]")!,
+    h3.closest("div[data-orientation='vertical']")!.querySelector("div[id^=radix]")!,
   extractCover: (_) => {
     const src = document
       .querySelector(".aspect-\\[2\\/3\\] > img.object-cover")
@@ -33,11 +31,8 @@ export default defineRegistry({
   },
   title: (h3) => h3.querySelector("h3")!.textContent.trim(),
   description: () =>
-    document
-      .querySelector(".prose > .whitespace-pre-line")
-      ?.textContent.trim() ?? "",
-  getChapterTitle: (a) =>
-    a.querySelector(".text-sm")?.textContent.trim() ?? "Unknown",
+    document.querySelector(".prose > .whitespace-pre-line")?.textContent.trim() ?? "",
+  getChapterTitle: (a) => a.querySelector(".text-sm")?.textContent.trim() ?? "Unknown",
   lazyDom: true,
   fetcherOptions: {
     concurrency: 1,

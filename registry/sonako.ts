@@ -5,8 +5,7 @@ export default defineRegistry({
     // 著者名の抽出
     return Array.from(document.querySelectorAll("h2"))
       .find((t) => t.textContent?.includes("viết bởi"))
-      ?.textContent
-      ?.split("viết bởi")
+      ?.textContent?.split("viết bởi")
       .at(-1)
       ?.trim()
       .replace("[]", "")
@@ -79,14 +78,8 @@ export default defineRegistry({
 
     $("img").each((_, img) => {
       const $img = $(img)
-      $img.attr(
-        "src",
-        $img.attr("src")?.replace(/\/scale-to-width-down\/\d+/, "")
-      )
-      $img.attr(
-        "data-src",
-        $img.attr("data-src")?.replace(/\/scale-to-width-down\/\d+/, "")
-      )
+      $img.attr("src", $img.attr("src")?.replace(/\/scale-to-width-down\/\d+/, ""))
+      $img.attr("data-src", $img.attr("data-src")?.replace(/\/scale-to-width-down\/\d+/, ""))
     })
   },
   title: (h3) => h3.textContent.trim().replace("[]", "")

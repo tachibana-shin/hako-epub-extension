@@ -7,19 +7,14 @@ export default defineRegistry({
   lang: "vi",
   customStyle: `.volume-title { margin-right: auto }`,
   findAuthor() {
-    return document
-      .querySelector(".book-header-meta > span:first-child")
-      ?.textContent.trim()
+    return document.querySelector(".book-header-meta > span:first-child")?.textContent.trim()
   },
   findBlocks: ".volume-header",
   findTarget(h3: HTMLElement): HTMLElement {
     return h3
   },
   extractCover() {
-    return (
-      document.querySelector(".book-header-mobile img")?.getAttribute("src") ??
-      void 0
-    )
+    return document.querySelector(".book-header-mobile img")?.getAttribute("src") ?? void 0
   },
   findTags: () =>
     Array.from(document.querySelectorAll(".tag-chip-readonly")).map(
@@ -39,8 +34,7 @@ export default defineRegistry({
 
     return titleEl.trim() ?? "Unknown"
   },
-  description: () =>
-    document.querySelector(".text-sm.text-secondary")?.textContent?.trim(),
+  description: () => document.querySelector(".text-sm.text-secondary")?.textContent?.trim(),
   lazyDom: true,
   async getChaptersList(h3) {
     const bookUuid = location.pathname.split("/book")[1].trim().split("/")[1]
@@ -62,8 +56,7 @@ export default defineRegistry({
       .trim()
     const currentVolume = all.find((vol) => vol.title === volName)
 
-    if (currentVolume === void 0)
-      throw new Error("Can't find volume in storage")
+    if (currentVolume === void 0) throw new Error("Can't find volume in storage")
 
     const chapters = await getChaptersByVolume(
       localStorage.activeProfile === "sync" ? "TuLamDB_sync" : "TuLamDB",
@@ -77,34 +70,25 @@ export default defineRegistry({
           .trim()
           .replace(/Discord\s+Facebook\s+(?:-+>)?/, "")
           .split(/\n{2,}/g)
-          .map(
-            (paragraph) => `<p>${paragraph.trim().replace(/\n/g, "<br>")}</p>`
-          )
+          .map((paragraph) => `<p>${paragraph.trim().replace(/\n/g, "<br>")}</p>`)
           .join("")
           .trim()
 
         const content = formattedContent
-          .replace(
-            /\[img\]https:\/\/i.hako.vn\/ln\/series\/chapter-banners\/[^[]+\[\/img\]/g,
-            ""
-          )
-          .replace(
-            /\[IMG:([^\]]+)\]|\[img\](.*?)\[\/img\]/gi,
-            (_, idGroup, urlGroup) => {
-              let src = ""
+          .replace(/\[img\]https:\/\/i.hako.vn\/ln\/series\/chapter-banners\/[^[]+\[\/img\]/g, "")
+          .replace(/\[IMG:([^\]]+)\]|\[img\](.*?)\[\/img\]/gi, (_, idGroup, urlGroup) => {
+            let src = ""
 
-              if (idGroup) {
-                src =
-                  chp.images?.find((img) => img.id === idGroup)?.dataUrl || ""
-              } else if (urlGroup) {
-                src = urlGroup.trim()
-              }
-
-              if (!src) return `<span>Image not found</span>`
-
-              return `<img src="${src}" alt="${chp.title}" style="max-width: 100%; display: block; margin: 10px auto;" />`
+            if (idGroup) {
+              src = chp.images?.find((img) => img.id === idGroup)?.dataUrl || ""
+            } else if (urlGroup) {
+              src = urlGroup.trim()
             }
-          )
+
+            if (!src) return `<span>Image not found</span>`
+
+            return `<img src="${src}" alt="${chp.title}" style="max-width: 100%; display: block; margin: 10px auto;" />`
+          })
 
         return { name: chp.title, href: content }
       })
@@ -132,10 +116,7 @@ function openDB(dbName: string): Promise<IDBDatabase> {
   })
 }
 
-async function getAllVolumesByBook(
-  dbName: string,
-  bookUuid: string
-): Promise<Volume[]> {
+async function getAllVolumesByBook(dbName: string, bookUuid: string): Promise<Volume[]> {
   const db = await openDB(dbName)
 
   return new Promise((resolve, reject) => {
@@ -175,10 +156,7 @@ interface Chapter {
   sourceId?: string // version 5
 }
 
-async function getChaptersByVolume(
-  dbName: string,
-  volumeId: string
-): Promise<Chapter[]> {
+async function getChaptersByVolume(dbName: string, volumeId: string): Promise<Chapter[]> {
   const db = await openDB(dbName)
 
   return new Promise((resolve, reject) => {
@@ -190,15 +168,12 @@ async function getChaptersByVolume(
       const request = index.getAll(volumeId)
 
       request.onsuccess = () => {
-        const chapters = (request.result as Chapter[]).sort(
-          (a, b) => a.order - b.order
-        )
+        const chapters = (request.result as Chapter[]).sort((a, b) => a.order - b.order)
         resolve(chapters)
         db.close()
       }
 
-      request.onerror = () =>
-        reject(`Can't get chapters for volume: ${volumeId}`)
+      request.onerror = () => reject(`Can't get chapters for volume: ${volumeId}`)
     } catch (error) {
       reject(error)
       db.close()

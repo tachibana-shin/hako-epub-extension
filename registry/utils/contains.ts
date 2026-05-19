@@ -1,7 +1,4 @@
-export function containsAll<T extends Element>(
-  selector: string | ArrayLike<T>,
-  text: string
-): T[] {
+export function containsAll<T extends Element>(selector: string | ArrayLike<T>, text: string): T[] {
   if (typeof selector === "string") {
     selector = $$<T>(selector)
   }

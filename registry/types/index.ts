@@ -18,10 +18,7 @@ export interface SiteConfig {
   /**
    * @description Accept return string format "Author 1 | Author 2 | ..."
    */
-  findAuthor: (
-    h3: HTMLElement,
-    target: Element
-  ) => string | string[] | undefined
+  findAuthor: (h3: HTMLElement, target: Element) => string | string[] | undefined
   findBlocks: string
   findTarget: (h3: HTMLElement) => HTMLElement
   extractCover: (h3: HTMLElement, target: Element) => string | undefined
@@ -38,10 +35,13 @@ export interface SiteConfig {
   cleaner?: ($: CheerioAPI) => void
   transformContainer?: ($: CheerioAPI) => CheerioAPI
   preParse?: (html: string) => PromiseOr<string>
-  getChaptersList?: (source: HTMLElement, target: HTMLElement) => PromiseLike<{ name: string, href: string }[]>
+  getChaptersList?: (
+    source: HTMLElement,
+    target: HTMLElement
+  ) => PromiseLike<{ name: string; href: string }[]>
   getChapterTitle?: (anchor: HTMLElement) => string
   getChapterHref?: (anchor: HTMLElement) => string
-  fetchChapter?: (chapter: { name: string, href: string }) => PromiseLike<Response>
+  fetchChapter?: (chapter: { name: string; href: string }) => PromiseLike<Response>
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean
 }

@@ -5,8 +5,7 @@ export default defineRegistry({
   findBlocks: "#storyTitle",
   findTarget: () => $("#chapterListGrid")!,
   extractCover: () => $("img#coverImage")?.getAttribute("src") ?? undefined,
-  findTags: () =>
-    Array.from($$("a.category-link")).map((a) => a.textContent?.trim()),
+  findTags: () => Array.from($$("a.category-link")).map((a) => a.textContent?.trim()),
   title: () => {
     const list = Array.from($$("#chapterListGrid .chapter-cell > a"))
     const start = list[0]

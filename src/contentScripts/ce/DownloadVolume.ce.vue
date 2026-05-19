@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import type { SiteConfig } from "../registry"
 import saveAs from "file-saver"
 import { delMany, getMany, setMany } from "idb-keyval"
-import type { SiteConfig } from "../registry"
 import { generateEpub } from "../logic/generate-epub"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
@@ -27,7 +27,7 @@ const {
 
     return wrap.innerHTML
   },
-  fetchChapter: propFetchChapter = (chapter: { name: string, href: string }) =>
+  fetchChapter: propFetchChapter = (chapter: { name: string; href: string }) =>
     fetch(chapter.href, { credentials: "include" }),
   getChapterTitle = (anchor: HTMLElement) => anchor.textContent!.trim(),
   getChapterHref = (anchor: HTMLElement) => anchor.getAttribute("href")!,
@@ -51,8 +51,7 @@ if (!targetEl) throw new Error(`Target v-id='${target}' not found`)
 
 const slug = computed(() => {
   const slug = (
-    document.querySelector("link[rel=canonical]")?.getAttribute("href") ??
-    location.pathname
+    document.querySelector("link[rel=canonical]")?.getAttribute("href") ?? location.pathname
   )
     .split("/")
     .filter(Boolean)
@@ -65,9 +64,7 @@ async function getChapters() {
   if (chapters.length === 0) return chapters
 
   const numFirst = Number.parseInt(chapters[0].name.replace(/\D/g, ""))
-  const numLast = Number.parseInt(
-    chapters[chapters.length - 1].name.replace(/\D/g, "")
-  )
+  const numLast = Number.parseInt(chapters[chapters.length - 1].name.replace(/\D/g, ""))
 
   if (chaptersReverse) {
     if (Number.isNaN(numFirst) || Number.isNaN(numLast)) {
@@ -107,8 +104,7 @@ const downloadDone = ref<DownloadState>(DownloadState.None)
 watchEffect(() => {
   getMany([slug.value, `${slug.value}_hash`]).then(([metadata, hash]) => {
     if (metadata) {
-      downloadDone.value =
-        hash === chaptersHash.value ? DownloadState.Done : DownloadState.Update
+      downloadDone.value = hash === chaptersHash.value ? DownloadState.Done : DownloadState.Update
     }
   })
 })
@@ -139,8 +135,7 @@ async function downloadVolume() {
   console.log({ source })
 
   const title = configTitle(source, targetEl)
-  const bookTitle =
-    document.querySelector(qBookTitle)?.textContent?.trim() ?? "Unknown"
+  const bookTitle = document.querySelector(qBookTitle)?.textContent?.trim() ?? "Unknown"
 
   const authorStr = configFindAuthor(source, targetEl)
   const author =
@@ -154,9 +149,7 @@ async function downloadVolume() {
   // TODO: clean me this logic for pages vietnamese
   const chapterNumber =
     Number.parseFloat(title.replace(/^tập|chapter|chap/i, "")) ||
-    Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(
-      targetEl
-    ) + 1
+    Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(targetEl) + 1
 
   const options = {
     title,
@@ -236,15 +229,11 @@ async function confirmDelete() {
   <button
     v-if="downloadProgress === -1"
     class="btn ml-2 my--2 pa-2 bg-#222 bg-opacity-20 rounded-50% transition-ease-in-out duration-222ms transition-all hover:bg-opacity-30"
-    @click.prevent.stop="
-      downloadDone !== DownloadState.Done ? downloadVolume() : downloadD()
-    "
+    @click.prevent.stop="downloadDone !== DownloadState.Done ? downloadVolume() : downloadD()"
     @contextmenu.prevent.stop="confirmDelete"
   >
     <i-hugeicons-apple-finder v-if="downloadDone === DownloadState.Done" />
-    <i-hugeicons-system-update-02
-      v-else-if="downloadDone === DownloadState.Update"
-    />
+    <i-hugeicons-system-update-02 v-else-if="downloadDone === DownloadState.Update" />
     <i-hugeicons-download-04 v-else />
   </button>
   <XRadialProgress

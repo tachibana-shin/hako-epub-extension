@@ -36,8 +36,8 @@ defineProps<{
   &:before {
     content: "";
     background:
-      radial-gradient(farthest-side, currentColor 98%, #0000)
-        top/var(--thickness) var(--thickness) no-repeat,
+      radial-gradient(farthest-side, currentColor 98%, #0000) top/var(--thickness) var(--thickness)
+        no-repeat,
       conic-gradient(currentColor var(--radialprogress), #0000 0);
     mask: radial-gradient(
       farthest-side,
@@ -54,8 +54,7 @@ defineProps<{
   &:after {
     content: "";
     inset: calc(50% - var(--thickness) / 2);
-    transform: rotate(calc(var(--value) * 3.6deg - 90deg))
-      translate(calc(var(--size) / 2 - 50%));
+    transform: rotate(calc(var(--value) * 3.6deg - 90deg)) translate(calc(var(--size) / 2 - 50%));
     background-color: currentColor;
     border-radius: 3.40282e38px;
     transition: transform 0.3s linear;

@@ -1,14 +1,13 @@
-import { defineConfig } from "vite"
 import type { Plugin } from "vite"
-import { sharedConfig } from "./vite.config.mjs"
-import { isDev, r } from "./scripts/utils"
+import { defineConfig } from "vite"
 import packageJson from "./package.json"
 import { buildCSS } from "./scripts/build-ce-css"
+import { isDev, r } from "./scripts/utils"
+import { sharedConfig } from "./vite.config.mjs"
 
 function WatchVuePlugin(): Plugin {
   return {
     name: "watch-vue",
-    // 日本語コメント: ファイル変更時に呼ばれるフック
     watchChange(id) {
       if (id.endsWith(".vue")) {
         buildCSS()
@@ -22,13 +21,40 @@ function WatchVuePlugin(): Plugin {
     }
   }
 }
-// bundling the content script using Vite
+
+const processPolyfillCode = `
+if (typeof globalThis.process === 'undefined') {
+  globalThis.process = {
+    env: { NODE_ENV: "production", HTTP_PROXY: undefined, http_proxy: undefined },
+    cwd: () => '/',
+    platform: 'browser',
+    nextTick: (fn, ...args) => setTimeout(() => fn(...args), 0),
+    argv: [],
+    stdout: { write: () => {} },
+    stderr: { write: () => {} },
+    binding: () => { throw new Error('process.binding not supported'); },
+    chdir: () => { throw new Error('process.chdir not supported'); },
+    umask: () => 0
+  };
+}
+`
+
+function ProcessPolyfillPlugin(): Plugin {
+  return {
+    name: "process-polyfill",
+    enforce: "post",
+    renderChunk(code) {
+      return processPolyfillCode + code
+    }
+  }
+}
+
 export default defineConfig({
   ...sharedConfig,
-  plugins: [...sharedConfig.plugins!, WatchVuePlugin()],
+  plugins: [...sharedConfig.plugins!, WatchVuePlugin(), ProcessPolyfillPlugin()],
   define: {
-    "__DEV__": isDev,
-    "__NAME__": JSON.stringify(packageJson.name),
+    __DEV__: isDev,
+    __NAME__: JSON.stringify(packageJson.name),
     // https://github.com/vitejs/vite/issues/9320
     // https://github.com/vitejs/vite/issues/9186
     "process.env.NODE_ENV": JSON.stringify(isDev ? "development" : "production")

@@ -1,7 +1,7 @@
 import type { CheerioAPI } from "cheerio"
+import type { PromiseOr } from "registry/types"
 import { load } from "cheerio"
 import { minify } from "html-minifier-terser"
-import type { PromiseOr } from "registry/types"
 
 export async function cleanChapter(
   html: string,
@@ -11,7 +11,9 @@ export async function cleanChapter(
   preParse: (html: string) => PromiseOr<string>
 ): Promise<string | null> {
   const $ = transformContainer(
-    load(await preParse(html), { xml: { xmlMode: true, selfClosingTags: false } })
+    load(await preParse(html), {
+      xml: { xmlMode: true, selfClosingTags: false }
+    })
   )
 
   if (typeof qContainer === "function") {
@@ -51,8 +53,7 @@ export async function cleanChapter(
     if ($el.attr("style")?.match(/display:\s*none/)) $el.remove()
   })
 
-  const rawHtml =
-    typeof qContainer === "function" ? qContainer($) : $(qContainer).html()
+  const rawHtml = typeof qContainer === "function" ? qContainer($) : $(qContainer).html()
   if (!rawHtml) return null
 
   const output = await minify(rawHtml, {

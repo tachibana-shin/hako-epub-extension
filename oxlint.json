@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/refs/heads/main/crates/oxc_linter/src/config/schema.json",
+  "plugins": ["typescript", "import", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "style": "warn",
+    "restriction": {
+      "no-console": "off"
+    }
+  },
+  "rules": {
+    "quotes": "off",
+    "comma-dangle": "off",
+    "operator-linebreak": "off",
+    "arrow-parens": "off",
+    "brace-style": "off"
+  }
+}

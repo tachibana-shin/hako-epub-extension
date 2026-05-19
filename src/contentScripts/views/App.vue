@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { ExternalToast } from "vue-sonner"
 import { useEventListener } from "@vueuse/core"
-import { type ExternalToast, Toaster, toast } from "vue-sonner"
+import { toast, Toaster } from "vue-sonner"
 import "vue-sonner/style.css"
 import "uno.css"
 

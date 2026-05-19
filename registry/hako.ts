@@ -5,9 +5,7 @@ export default defineRegistry({
     const infoItems = Array.from(document.querySelectorAll(".info-item"))
     return Array.from(
       infoItems
-        .find((info) =>
-          info.querySelector(".info-name")?.textContent?.includes("Tác giả:")
-        )
+        .find((info) => info.querySelector(".info-name")?.textContent?.includes("Tác giả:"))
         ?.querySelector(".info-value")
         ?.querySelectorAll("a, span") ?? []
     ).map((el) => el.textContent!.trim())
@@ -39,10 +37,8 @@ export default defineRegistry({
       )
       .flat(1)
       .filter(Boolean),
-  title: (_, target) =>
-    target.querySelector(".sect-title")!.textContent!.trim(),
-  description: () =>
-    document.querySelector(".summary-content")?.textContent?.trim(),
+  title: (_, target) => target.querySelector(".sect-title")!.textContent!.trim(),
+  description: () => document.querySelector(".summary-content")?.textContent?.trim(),
   fetcherOptions: {
     concurrency: 5,
     sleep: 3_000,
@@ -85,8 +81,7 @@ export default defineRegistry({
     // Choose decoding strategyreadme
     function decodeChunk(data: string, strategy: string, key: string) {
       // data = base64 or reversed-base64 depending on strategy
-      const prepared =
-        strategy === "base64_reverse" ? data.split("").reverse().join("") : data
+      const prepared = strategy === "base64_reverse" ? data.split("").reverse().join("") : data
 
       if (strategy === "xor_shuffle") {
         return xorDecode(prepared, key)

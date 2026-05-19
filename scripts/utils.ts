@@ -1,10 +1,11 @@
+import type { SiteConfig } from "../registry/types"
+import fs from "node:fs"
 import { join, resolve } from "node:path"
 import process from "node:process"
-import fs from "node:fs"
 import { pathToFileURL } from "node:url"
-import { bgCyan, black } from "kolorist"
 
-import { type SiteConfig, defineRegistry } from "../registry/types"
+import { bgCyan, black } from "kolorist"
+import { defineRegistry } from "../registry/types"
 
 // eslint-disable-next-line no-restricted-globals
 Object.assign(typeof self !== "undefined" ? self : global, { defineRegistry })
@@ -22,10 +23,7 @@ export async function getRegistry() {
   const registryDir = resolve(import.meta.dirname, "../registry")
   const files = fs
     .readdirSync(registryDir)
-    .filter(
-      (file) =>
-        file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts"
-    )
+    .filter((file) => file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts")
 
   const sites = await Promise.all(
     files.map(async (file) => {

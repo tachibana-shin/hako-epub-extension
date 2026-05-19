@@ -45,14 +45,8 @@ export default defineRegistry({
 
     $("img").each((_, img) => {
       const $img = $(img)
-      $img.attr(
-        "src",
-        $img.attr("src")?.replace(/(width|height)=\d*/gi, "width=800")
-      )
-      $img.attr(
-        "data-src",
-        $img.attr("data-src")?.replace(/(width|height)=\d*/gi, "width=800")
-      )
+      $img.attr("src", $img.attr("src")?.replace(/(width|height)=\d*/gi, "width=800"))
+      $img.attr("data-src", $img.attr("data-src")?.replace(/(width|height)=\d*/gi, "width=800"))
     })
   },
   title: (h3) =>
@@ -62,6 +56,6 @@ export default defineRegistry({
       .filter(Boolean)
       .join(" ")
       .trim()
-      .replace(/\([\s_\-]*\)/g, "")
+      .replace(/\([\s_-]*\)/g, "")
       .trim()
 })

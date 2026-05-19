@@ -52,10 +52,7 @@ export async function buildCSS() {
       minify: MINIFY
     })
     await fs.mkdir(dirname(GENERATED_CSS), { recursive: true }).catch(() => {})
-    await fs.writeFile(
-      GENERATED_CSS,
-      `export default ${JSON.stringify(String(css))}`
-    )
+    await fs.writeFile(GENERATED_CSS, `export default ${JSON.stringify(String(css))}`)
     console.log(`${c.green("✓")} CSS built`)
 
     return {

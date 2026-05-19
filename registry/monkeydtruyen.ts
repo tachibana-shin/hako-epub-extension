@@ -5,14 +5,12 @@ export default defineRegistry({
   findBlocks: "h2.card-title",
   findTarget: () => $(".list-chapters")!,
   extractCover: () => $(".card img")?.getAttribute("src") ?? undefined,
-  findTags: () =>
-    Array.from($$("a.cate-item")).map((a) => a.textContent?.trim()),
+  findTags: () => Array.from($$("a.cate-item")).map((a) => a.textContent?.trim()),
   title: () => {
     const list = Array.from($$(".list-chapters .episode-title > a"))
     const end = list[0]?.textContent?.trim()?.replace(/\s+/g, " ").trim()
     const start = list.at(-1)?.textContent?.trim()?.replace(/\s+/g, " ").trim()
-    if (!start || !end)
-      return $("h2.card-title")?.textContent?.trim() ?? "Unknown"
+    if (!start || !end) return $("h2.card-title")?.textContent?.trim() ?? "Unknown"
 
     return `${start} ~ ${end}`
   },

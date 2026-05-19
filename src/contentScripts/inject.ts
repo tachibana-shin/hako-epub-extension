@@ -1,6 +1,6 @@
+import type { SiteConfig } from "./registry"
 import { toast } from "vue-sonner"
 import { register } from "./ce/register"
-import type { SiteConfig } from "./registry"
 import registry from "./registry"
 
 register()
@@ -38,9 +38,7 @@ let watching = false
 function injector() {
   const hostname = location.hostname.replace(/^www\./, "")
   const config = registry.find(
-    (item) =>
-      item.domains.includes(location.hostname) ||
-      item.domains.includes(hostname)
+    (item) => item.domains.includes(location.hostname) || item.domains.includes(hostname)
   )
   if (!config) return console.warn("This domain not exists registry")
 

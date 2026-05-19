@@ -7,13 +7,10 @@ export default defineRegistry({
       .join(", ")
   },
   findBlocks: ".module-details .module-header",
-  findTarget: (h3) =>
-    h3.closest(".module-details")!.querySelector(".module-chapters-list")!,
+  findTarget: (h3) => h3.closest(".module-details")!.querySelector(".module-chapters-list")!,
   extractCover: (h3) =>
-    h3
-      .closest(".module-content")
-      ?.querySelector(".module-cover-image")
-      ?.getAttribute("src") || undefined,
+    h3.closest(".module-content")?.querySelector(".module-cover-image")?.getAttribute("src") ||
+    undefined,
   publisher: "valvrareteam.net",
   targetQueries: {
     bookTitle: ".rd-novel-title",

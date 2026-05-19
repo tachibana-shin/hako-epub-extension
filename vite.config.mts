@@ -1,39 +1,44 @@
 /// <reference types="vitest" />
 
-import { dirname, relative } from "node:path"
 import type { UserConfig } from "vite"
-import { defineConfig } from "vite"
+import { dirname, relative } from "node:path"
 import Vue from "@vitejs/plugin-vue"
-import Icons from "unplugin-icons/vite"
-import IconsResolver from "unplugin-icons/resolver"
-import Components from "unplugin-vue-components/vite"
-import { NaiveUiResolver } from "unplugin-vue-components/resolvers"
-import AutoImport from "unplugin-auto-import/vite"
-import arrayBuffer from "vite-plugin-arraybuffer"
 import UnoCSS from "unocss/vite"
-import { nodePolyfills } from "vite-plugin-node-polyfills"
+import AutoImport from "unplugin-auto-import/vite"
+import IconsResolver from "unplugin-icons/resolver"
+import Icons from "unplugin-icons/vite"
+import { NaiveUiResolver } from "unplugin-vue-components/resolvers"
+import Components from "unplugin-vue-components/vite"
+import { defineConfig } from "vite"
+import arrayBuffer from "vite-plugin-arraybuffer"
 import removeConsole from "vite-plugin-remove-console"
-import { isDev, port, r } from "./scripts/utils"
 import packageJson from "./package.json"
 import { registryPlugin } from "./plugins/vite-plugin-registry"
+import { isDev, port, r } from "./scripts/utils"
 
 export const sharedConfig: UserConfig = {
   root: r("src"),
   resolve: {
     alias: {
       "~/": `${r("src")}/`,
-      "registry/": `${r("registry")}/`
+      "registry/": `${r("registry")}/`,
+      path: `${r("scripts")}/node-shims/path.ts`,
+      fs: `${r("scripts")}/node-shims/fs.ts`,
+      os: `${r("scripts")}/node-shims/os.ts`,
+      https: `${r("scripts")}/node-shims/https.ts`,
+      http: `${r("scripts")}/node-shims/http.ts`,
+      url: `${r("scripts")}/node-shims/url.ts`,
+      querystring: `${r("scripts")}/node-shims/querystring.ts`
     }
   },
   define: {
-    "__DEV__": isDev,
-    "__NAME__": JSON.stringify(packageJson.name),
+    __DEV__: isDev,
+    __NAME__: JSON.stringify(packageJson.name),
     "process.env.NODE_ENV": JSON.stringify("production")
   },
   plugins: [
     registryPlugin(),
     arrayBuffer(),
-    nodePolyfills({ globals: { process: true } }),
 
     Vue({
       template: {
@@ -78,10 +83,7 @@ export const sharedConfig: UserConfig = {
       enforce: "post",
       apply: "build",
       transformIndexHtml(html, { path }) {
-        return html.replace(
-          /"\/assets\//g,
-          `"${relative(dirname(path), "/assets")}/`
-        )
+        return html.replace(/"\/assets\//g, `"${relative(dirname(path), "/assets")}/`)
       }
     },
 

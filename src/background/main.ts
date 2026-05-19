@@ -1,8 +1,8 @@
 // import { onMessage } from "webext-bridge/background"
 // import { setMany } from "idb-keyval"
 
-import initiatorDomains from "../../registry?registry-domains"
 import { isFirefox } from "~/env"
+import initiatorDomains from "../../registry?registry-domains"
 
 // only on dev mode
 if (import.meta.hot) {

@@ -8,14 +8,12 @@ export default defineRegistry({
   findBlocks: ".post-title",
   findTarget: () => $("ul.version-chap")!,
   extractCover: () => $(".summary_image img")?.getAttribute("src") ?? undefined,
-  findTags: () =>
-    Array.from($$(".genres-content a")).map((a) => a.textContent?.trim()),
+  findTags: () => Array.from($$(".genres-content a")).map((a) => a.textContent?.trim()),
   title: () => {
     const list = Array.from($$("ul.version-chap > li > a"))
     const end = list[0]?.textContent?.trim()?.replace(/\s+/g, " ").trim()
     const start = list.at(-1)?.textContent?.trim()?.replace(/\s+/g, " ").trim()
-    if (!start || !end)
-      return $(".post-title h1")?.textContent?.trim() ?? "Unknown"
+    if (!start || !end) return $(".post-title h1")?.textContent?.trim() ?? "Unknown"
 
     return `${start} ~ ${end}`
   },
