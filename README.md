@@ -8,7 +8,6 @@ A browser extension that allows you to download EPub files directly from light n
 ## List website support
 
 <!-- @list website support -->
-
 - https://baka-tsuki.org
 - https://beetruyen.net
 - https://dammy.me
@@ -29,6 +28,9 @@ A browser extension that allows you to download EPub files directly from light n
 - https://otruyen.vn
 - https://phongphongtam2.com
 - https://sonako.fandom.com
+- https://truyenqqko.com
+- https://truyenqqpro.com
+- https://truyenqqvip.com
 - https://valvrareteam.net
 - https://www.baka-tsuki.org
 - https://www.foxaholic.com
