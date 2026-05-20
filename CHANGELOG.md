@@ -1,3 +1,17 @@
+# [0.6.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.5.0...v0.6.0) (2026-05-20)
+
+
+### Bug Fixes
+
+* **download:** fix epub buffer blob creation ([244049a](https://github.com/tachibana-shin/hako-epub-extension/commit/244049aeb73c2572ec5a74d20a09ef86bfef6fdf))
+* **sonako:** preserve full size image URLs ([07ffbd5](https://github.com/tachibana-shin/hako-epub-extension/commit/07ffbd59b82ee562e3f7b7b91bee849d86d83c13))
+
+
+### Features
+
+* add CBZ download support ([2fe8979](https://github.com/tachibana-shin/hako-epub-extension/commit/2fe897941a87b27b819e648ff435d709eebbe9d6))
+* **registry:** add truyenqq support ([d37e922](https://github.com/tachibana-shin/hako-epub-extension/commit/d37e92294c6b72b9539e8a111d3375a2b2524e7d))
+
 # [0.5.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.4.0...v0.5.0) (2026-05-12)
 
 ### Features
