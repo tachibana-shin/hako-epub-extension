@@ -44,6 +44,7 @@ export interface SiteConfig {
   fetchChapter?: (chapter: { name: string; href: string }) => PromiseLike<Response>
   fetcherOptions?: FetcherOptions
   lazyDom?: boolean
+  cbz?: boolean
 }
 
 export const defineRegistry = (config: SiteConfig) => config

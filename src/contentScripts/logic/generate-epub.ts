@@ -10,10 +10,7 @@ import UTMCandomebeTTF from "~/assets/fonts/UTM_Candombe.ttf?uint8array&base64"
 import UTMLinotypeZapfinoKTTTF from "~/assets/fonts/UTM_LinotypeZapfinoKT.ttf?uint8array&base64"
 import { cleanChapter } from "./clean-chapter"
 import { editFilesInEPUB } from "./edit-files-in-epub"
-
-function sleep(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms))
-}
+import { sleep, getFetchUrl, getFetchCredentials } from "./utils"
 
 class EPubExtend extends EPub {
   constructor(
@@ -43,16 +40,8 @@ class EPubExtend extends EPub {
         this.options.fonts.slice(i, i + this.options.batchSize).map((font) => {
           const d = retryAsync(
             () => {
-              // if url same in location.href domain not required #cors else not credentials
-              const url =
-                font.url.startsWith(location.origin) || font.url.startsWith("/")
-                  ? font.url
-                  : `${font.url}#cors`
-              return fetch(url, {
-                credentials:
-                  font.url.startsWith(location.origin) || font.url.startsWith("/")
-                    ? "include"
-                    : "same-origin"
+              return fetch(getFetchUrl(font.url), {
+                credentials: getFetchCredentials(font.url)
               }).then(async (res) => {
                 if (!res.ok) {
                   if (res.status === 429) {
@@ -103,12 +92,8 @@ class EPubExtend extends EPub {
 
     const promise = retryAsync(
       async () => {
-        // if url same in location.href domain not required #cors else not credentials
-        const resolvedUrl =
-          url.startsWith(location.origin) || url.startsWith("/") ? url : `${url}#cors`
-        const res = await fetch(resolvedUrl, {
-          credentials:
-            url.startsWith(location.origin) || url.startsWith("/") ? "include" : "same-origin"
+        const res = await fetch(getFetchUrl(url), {
+          credentials: getFetchCredentials(url)
         })
 
         if (res.status === 404 || res.status === 403) {
@@ -326,12 +311,9 @@ export async function generateEpub(
     ? await retryAsync(
         () => {
           return fetch(
-            `${cover}${cover.startsWith(location.origin) || cover.startsWith("/") ? "" : "#cors"}`,
+            getFetchUrl(cover),
             {
-              credentials:
-                cover.startsWith(location.origin) || cover.startsWith("/")
-                  ? "include"
-                  : "same-origin"
+              credentials: getFetchCredentials(cover)
             }
           ).then(async (res) =>
             res.ok

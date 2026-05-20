@@ -3,6 +3,7 @@ import type { SiteConfig } from "../registry"
 import saveAs from "file-saver"
 import { delMany, getMany, setMany } from "idb-keyval"
 import { generateEpub } from "../logic/generate-epub"
+import { generateCbz } from "../logic/generate-cbz"
 import { toastShadow } from "./toast-shadow"
 import XRadialProgress from "./XRadialProgress.ce.vue"
 
@@ -169,6 +170,8 @@ async function downloadVolume() {
     Number.parseFloat(title.replace(/^tập|chapter|chap/i, "")) ||
     Array.from(targetEl.parentNode!.querySelectorAll(".volume-list")).indexOf(targetEl) + 1
 
+  const ext = config.cbz ? "cbz" : "epub"
+
   const options = {
     title,
     bookTitle,
@@ -181,24 +184,48 @@ async function downloadVolume() {
     chapterNumber,
     chapters: await getChapters()
   }
-  const { buffer } = await generateEpub(
-    options,
-    (progress) => {
-      console.log(`Generating EPUB: ${progress * 100}%`)
-      downloadProgress.value = progress
-    },
-    qContainer,
-    propCleaner,
-    propTransformContainer,
-    propFetcherOptions,
-    propPreParse,
-    propFetchChapter
-  ).catch((err) => {
-    console.error(err)
-    toastShadow(`Error generating EPUB ${err}`, "error")
 
-    throw err
-  })
+  let buffer: Uint8Array
+  if (config.cbz) {
+    buffer = await generateCbz(
+      options,
+      (progress) => {
+        console.log(`Generating CBZ: ${progress * 100}%`)
+        downloadProgress.value = progress
+      },
+      qContainer,
+      propCleaner,
+      propTransformContainer,
+      propFetcherOptions,
+      propPreParse,
+      propFetchChapter
+    ).catch((err) => {
+      console.error(err)
+      toastShadow(`Error generating CBZ ${err}`, "error")
+
+      throw err
+    })
+  } else {
+    const res = await generateEpub(
+      options,
+      (progress) => {
+        console.log(`Generating EPUB: ${progress * 100}%`)
+        downloadProgress.value = progress
+      },
+      qContainer,
+      propCleaner,
+      propTransformContainer,
+      propFetcherOptions,
+      propPreParse,
+      propFetchChapter
+    ).catch((err) => {
+      console.error(err)
+      toastShadow(`Error generating EPUB ${err}`, "error")
+
+      throw err
+    })
+    buffer = res
+  }
 
   downloadDone.value = DownloadState.Done
   downloadProgress.value = -1
@@ -211,16 +238,17 @@ async function downloadVolume() {
 
   const blob = new Blob([buffer as ArrayBuffer])
 
-  saveAs(blob, `${options.title} - ${options.bookTitle}.epub`)
+  saveAs(blob, `${options.title} - ${options.bookTitle}.${ext}`)
   blocking.value--
 }
 async function downloadD() {
   const [metadata, buffer] = await getMany([slug.value, `${slug.value}_file`])
+  const ext = config.cbz ? "cbz" : "epub"
 
   if (metadata && buffer) {
     const options = JSON.parse(metadata)
     const blob = new Blob([buffer as ArrayBuffer])
-    saveAs(blob, `${options.title} - ${options.bookTitle}.epub`)
+    saveAs(blob, `${options.title} - ${options.bookTitle}.${ext}`)
   } else {
     delMany([slug.value, `${slug.value}_file`])
     toastShadow("File not found retry download", "error")
