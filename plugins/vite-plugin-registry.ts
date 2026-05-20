@@ -24,15 +24,15 @@ export function registryPlugin(): Plugin {
           .readdirSync(registryDir)
           .filter((file) => file.endsWith(".ts") && file !== "index.ts" && file !== "types.ts")
 
-        // Use absolute paths for imports in the virtual module.
-        // Vite will handle these correctly.
         const imports = files
           .map(
             (file, i) =>
               `import site${i} from "${relative(dirname(import.meta.dirname), resolve(registryDir, file)).replace(/\\/g, "/")}"`
           )
           .join("\n")
-        const exports = `export default [${files.map((_, i) => `site${i}`).join(", ")}]`
+        const ids = files.map((f) => f.replace(/\.ts$/, ""))
+        const items = ids.map((id, i) => `{ id: "${id}", config: site${i} }`)
+        const exports = `export default [${items.join(", ")}]`
 
         return `${imports}\n${exports}`
       }

@@ -26,10 +26,10 @@ export async function getManifest() {
     //   default_icon: "assets/icon-512.png",
     //   default_popup: "dist/popup/index.html"
     // },
-    // options_ui: {
-    //   page: "dist/options/index.html",
-    //   open_in_tab: true
-    // },
+    options_ui: {
+      page: "dist/options/index.html",
+      open_in_tab: true
+    },
     browser_specific_settings: isFirefox
       ? {
           gecko: {
@@ -55,7 +55,7 @@ export async function getManifest() {
     },
     permissions: [
       "tabs",
-      // "storage",
+      "storage",
       "activeTab",
       // "sidePanel",
       "declarativeNetRequest",

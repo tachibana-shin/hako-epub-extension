@@ -5,7 +5,19 @@ import { setupApp } from "~/logic/common-setup"
 
 import App from "./views/App.vue"
 
-;(() => {
+;(async () => {
+  // 1. Read registry overrides from storage and inject into page context
+  try {
+    const result = await browser.storage.sync.get("registry-overrides")
+    const overrides = (result["registry-overrides"] as Record<string, unknown>) || {}
+    const meta = document.createElement("script")
+    meta.textContent = `window.__registryOverrides = ${JSON.stringify(overrides)}`
+    document.documentElement.prepend(meta)
+  } catch {
+    // storage not available, continue without overrides
+  }
+
+  // 2. Inject the main inject script
   const script = document.createElement("script")
   document.documentElement.prepend(script)
   script.src = browser.runtime.getURL("dist/contentScripts/inject.global.js")

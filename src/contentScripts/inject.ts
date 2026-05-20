@@ -5,6 +5,41 @@ import registry from "./registry"
 
 register()
 
+function isFunctionString(str: string): boolean {
+  return /^\s*(async\s+)?function\s*[*(]/.test(str) || /^\s*(async\s+)?\([\s\S]*\)\s*=>/.test(str)
+}
+
+function deserializeConfig(serialized: Record<string, unknown>): Partial<SiteConfig> {
+  const result: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(serialized)) {
+    result[key] =
+      typeof value === "string" && isFunctionString(value)
+        ? new Function(`return ${value}`)()
+        : value
+  }
+  return result as Partial<SiteConfig>
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mergeConfigs(base: SiteConfig, override: Record<string, any>): SiteConfig {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const merged: any = { ...base }
+  for (const [key, value] of Object.entries(override)) {
+    if (value === undefined) continue
+    if (
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      typeof (base as any)[key] === "object" &&
+      !Array.isArray((base as any)[key])
+    ) {
+      merged[key] = { ...(base as any)[key], ...value }
+    } else {
+      merged[key] = value
+    }
+  }
+  return merged
+}
+
 function bind(config: SiteConfig) {
   document.querySelectorAll<HTMLElement>(config.findBlocks).forEach((h3) => {
     if (h3.querySelector("download-volume")) return
@@ -37,10 +72,17 @@ function bind(config: SiteConfig) {
 let watching = false
 function injector() {
   const hostname = location.hostname.replace(/^www\./, "")
-  const config = registry.find(
+  let config = registry.find(
     (item) => item.domains.includes(location.hostname) || item.domains.includes(hostname)
-  )
+  ) as SiteConfig | undefined
   if (!config) return console.warn("This domain not exists registry")
+
+  // Merge user overrides from storage, injected by index.ts
+  const overridesMap = (window as any).__registryOverrides as Record<string, unknown> | undefined
+  const domainOverride = overridesMap?.[hostname] ?? overridesMap?.[location.hostname]
+  if (domainOverride) {
+    config = mergeConfigs(config, deserializeConfig(domainOverride as Record<string, unknown>))
+  }
 
   if (config.customStyle) {
     if (document.getElementById("hako-epub-extension-style")) return

@@ -46,10 +46,16 @@
   },
   "dependencies": {
     "@ameinhardt/unocss-preset-daisy": "^1.1.8",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/theme-one-dark": "^6.1.3",
+    "@codemirror/view": "^6.43.0",
     "@fcanvas/communicate": "^1.1.7",
     "@unocss/preset-wind4": "^66.6.8",
     "@vueuse/integrations": "^14.3.0",
     "cheerio": "^1.2.0",
+    "codemirror": "^6.0.2",
     "epub-gen-memory": "^1.1.2",
     "file-saver": "^2.0.5",
     "html-minifier-terser": "^7.2.0",
@@ -57,6 +63,7 @@
     "naive-ui": "^2.44.1",
     "p-limit": "^7.3.0",
     "ts-retry": "^6.0.0",
+    "vue-codemirror": "^6.1.1",
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
