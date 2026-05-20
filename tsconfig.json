@@ -11,7 +11,7 @@
       "registry/*": ["./registry/*"]
     },
     "resolveJsonModule": true,
-    "types": ["vite/client", "vite-plugin-arraybuffer/types"],
+    "types": ["vite/client", "vite-plugin-arraybuffer/types", "vitest/globals"],
     "strict": true,
     "noUnusedLocals": true,
     "esModuleInterop": true,

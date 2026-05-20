@@ -5,9 +5,10 @@ import { setTimeout as sleep } from "node:timers/promises"
 import { test as base, chromium } from "@playwright/test"
 import fs from "fs-extra"
 
-export { name } from "../package.json"
+import pkg from "../package.json" with { type: "json" }
 
-export const extensionPath = path.join(__dirname, "../extension")
+export const name = pkg.name
+export const extensionPath = path.join(import.meta.dirname ?? "", "../extension")
 
 export const test = base.extend<{
   context: BrowserContext
