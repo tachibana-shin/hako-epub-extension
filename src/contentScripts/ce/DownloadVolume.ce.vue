@@ -206,7 +206,7 @@ async function downloadVolume() {
       throw err
     })
   } else {
-    const res = await generateEpub(
+    buffer = await generateEpub(
       options,
       (progress) => {
         console.log(`Generating EPUB: ${progress * 100}%`)
@@ -224,7 +224,6 @@ async function downloadVolume() {
 
       throw err
     })
-    buffer = res
   }
 
   downloadDone.value = DownloadState.Done
@@ -236,7 +235,7 @@ async function downloadVolume() {
     [`${slug.value}_file`, buffer]
   ])
 
-  const blob = new Blob([buffer as ArrayBuffer])
+  const blob = new Blob([buffer.buffer as ArrayBuffer])
 
   saveAs(blob, `${options.title} - ${options.bookTitle}.${ext}`)
   blocking.value--
