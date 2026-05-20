@@ -78,19 +78,37 @@ async function getChapters() {
 }
 
 const chaptersHash = ref("")
-watch(
-  () => getChapters(),
-  async (newChapters) => {
-    const hashBuffer = await crypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(JSON.stringify(await newChapters))
-    )
-    chaptersHash.value = Array.from(new Uint8Array(hashBuffer))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
-  },
-  { immediate: true }
-)
+
+let chaptersObserver: MutationObserver | null = null
+let hashPending = false
+
+async function computeHash() {
+  const list = await getChapters()
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(JSON.stringify(list))
+  )
+  chaptersHash.value = Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+computeHash()
+
+if (config.lazyDom) {
+  onMounted(() => {
+    chaptersObserver = new MutationObserver(() => {
+      if (hashPending) return
+      hashPending = true
+      requestAnimationFrame(() => {
+        computeHash()
+        hashPending = false
+      })
+    })
+    chaptersObserver.observe(targetEl, { childList: true, subtree: true })
+  })
+  onUnmounted(() => chaptersObserver?.disconnect())
+}
 
 enum DownloadState {
   Done,
