@@ -22,10 +22,10 @@ export async function getManifest() {
     version: pkg.version,
     description: "__MSG_description__",
     default_locale: "vi",
-    // action: {
-    //   default_icon: "assets/icon-512.png",
-    //   default_popup: "dist/popup/index.html"
-    // },
+    action: {
+      default_icon: "assets/icon-114.png",
+      default_popup: "dist/popup/index.html"
+    },
     options_ui: {
       page: "dist/options/index.html",
       open_in_tab: true

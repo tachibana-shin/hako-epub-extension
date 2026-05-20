@@ -3,6 +3,8 @@
   "description": { "message": "A utility to download EPub from websites" },
 
   "optionsTitle": { "message": "Extension Config" },
+  "popupTitle": { "message": "Quick Config" },
+  "noRegistryForTab": { "message": "This website is not supported." },
   "selectRegistry": { "message": "Select Registry" },
   "selectRegistryPlaceholder": { "message": "Select registry..." },
   "saveConfig": { "message": "Save Config" },

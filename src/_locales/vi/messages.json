@@ -3,6 +3,8 @@
   "description": { "message": "Tiện ích tải EPub trên website" },
 
   "optionsTitle": { "message": "Cấu hình Extension" },
+  "popupTitle": { "message": "Cấu hình nhanh" },
+  "noRegistryForTab": { "message": "Trang web này chưa được hỗ trợ." },
   "selectRegistry": { "message": "Chọn registry" },
   "selectRegistryPlaceholder": { "message": "Chọn registry..." },
   "saveConfig": { "message": "Lưu cấu hình" },

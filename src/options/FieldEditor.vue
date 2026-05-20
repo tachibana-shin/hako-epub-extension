@@ -12,6 +12,7 @@ interface Entry {
 const props = defineProps<{
   entries: Entry[]
   parentKey?: string
+  excludeFunctions?: boolean
 }>()
 const emit = defineEmits<{
   change: [key: string, value: unknown]
@@ -20,6 +21,12 @@ const emit = defineEmits<{
 const t = browser.i18n.getMessage.bind(browser.i18n)
 
 const fnMode = reactive<Record<string, boolean>>({})
+
+function shouldRender(entry: Entry): boolean {
+  if (!props.excludeFunctions) return true
+  const type = resolveFieldType(entry.key, props.parentKey, entry.value)
+  return !type.includes("function")
+}
 
 function fullKey(key: string): string {
   return props.parentKey ? `${props.parentKey}.${key}` : key
@@ -61,21 +68,22 @@ function valAsStr(v: unknown): string {
 
 <template>
   <div class="field-editor">
-    <div
-      v-for="entry in entries"
-      :key="entry.key"
-      class="field-row"
-    >
-      <template v-if="resolveFieldType(entry.key, props.parentKey, entry.value) === 'object'">
-        <div class="field-label">{{ metaFor(entry.key).label }}</div>
-        <div v-if="metaFor(entry.key).description" class="field-desc">{{ metaFor(entry.key).description }}</div>
-        <FieldEditor
-          :entries="Object.entries(entry.value as Record<string, unknown>).map(([k, v]) => ({ key: k, value: v }))"
-          :parent-key="parentKey ? `${parentKey}.${entry.key}` : entry.key"
-          class="nested"
-          @change="onSubChange"
-        />
-      </template>
+    <template v-for="entry in entries" :key="entry.key">
+      <div
+        v-if="shouldRender(entry)"
+        class="field-row"
+      >
+        <template v-if="resolveFieldType(entry.key, props.parentKey, entry.value) === 'object'">
+          <div class="field-label">{{ metaFor(entry.key).label }}</div>
+          <div v-if="metaFor(entry.key).description" class="field-desc">{{ metaFor(entry.key).description }}</div>
+          <FieldEditor
+            :entries="Object.entries(entry.value as Record<string, unknown>).map(([k, v]) => ({ key: k, value: v }))"
+            :parent-key="parentKey ? `${parentKey}.${entry.key}` : entry.key"
+            :exclude-functions="excludeFunctions"
+            class="nested"
+            @change="onSubChange"
+          />
+        </template>
 
       <template v-else-if="resolveFieldType(entry.key, props.parentKey, entry.value) === 'function'">
         <div class="field-label">
@@ -163,7 +171,8 @@ function valAsStr(v: unknown): string {
           @update:value="(v: string) => onEntryChange(entry.key, v)"
         />
       </template>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 
