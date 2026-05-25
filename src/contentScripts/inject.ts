@@ -69,7 +69,9 @@ function injector() {
   bind(config)
 }
 
-document.addEventListener("DOMContentLoaded", injector)
-window.addEventListener("load", injector)
-
-injector()
+if (document.readyState === "complete" || document.readyState === "interactive") {
+  injector();
+} else {
+  document.addEventListener("DOMContentLoaded", injector)
+  window.addEventListener("load", injector)
+}
