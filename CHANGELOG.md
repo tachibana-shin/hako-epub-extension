@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.0...v0.6.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* refactor injector call based on document readiness ([69d6186](https://github.com/tachibana-shin/hako-epub-extension/commit/69d6186b22bb9be7ae74f8c68ae1fbdff1304b7a))
+
 # [0.6.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.5.0...v0.6.0) (2026-05-20)
 
 
