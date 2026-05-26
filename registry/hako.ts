@@ -40,8 +40,8 @@ export default defineRegistry({
   title: (_, target) => target.querySelector(".sect-title")!.textContent!.trim(),
   description: () => document.querySelector(".summary-content")?.textContent?.trim(),
   fetcherOptions: {
-    concurrency: 5,
-    sleep: 3_000,
+    concurrency: 1,
+    sleep: 2_000,
     delayError429: 15_000
   },
   targetQueries: {
