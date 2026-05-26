@@ -1,3 +1,10 @@
+## [0.6.2](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.1...v0.6.2) (2026-05-26)
+
+
+### Bug Fixes
+
+* adjust fetcherOptions concurrency and sleep duration (temp) upto 5 ([a13213b](https://github.com/tachibana-shin/hako-epub-extension/commit/a13213b6b62ae0933396403a55b3d486f3496bd0))
+
 ## [0.6.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.0...v0.6.1) (2026-05-25)
 
 
