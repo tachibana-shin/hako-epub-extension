@@ -1,3 +1,5 @@
+import { load } from "cheerio"
+
 export default defineRegistry({
   domains: ["hako.vn", "ln.hako.vn", "hako.vip", "docln.net", "docln.sbs"],
   lang: "vi",
@@ -41,7 +43,7 @@ export default defineRegistry({
   description: () => document.querySelector(".summary-content")?.textContent?.trim(),
   fetcherOptions: {
     concurrency: 1,
-    sleep: 2_000,
+    sleep: 1_000,
     delayError429: 15_000
   },
   targetQueries: {
@@ -123,8 +125,17 @@ export default defineRegistry({
 
     // Merge decoded HTML
     const html = decodedList.join("")
-    container.replaceWith($(`${html.trim()}`))
 
-    return $
+    const temp2 = document.createElement("div")
+    temp2.innerHTML = html
+
+    const temp = document.createElement("div")
+    temp.innerHTML = $.html()
+
+    temp.querySelector("#chapter-c-protected")!.replaceWith(...Array.from(temp2.childNodes))
+
+    return load(temp.innerHTML, {
+      xml: { xmlMode: true, selfClosingTags: false }
+    })
   }
 })
