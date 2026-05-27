@@ -1,3 +1,10 @@
+## [0.6.3](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.2...v0.6.3) (2026-05-27)
+
+
+### Bug Fixes
+
+* **hako:** optimize fetcher sleep duration and improve chapter content replacement logic ([0d478e0](https://github.com/tachibana-shin/hako-epub-extension/commit/0d478e0f7e51cc7cd33b4657a8a3679fd9d18391))
+
 ## [0.6.2](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.1...v0.6.2) (2026-05-26)
 
 
