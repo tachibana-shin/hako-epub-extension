@@ -42,16 +42,27 @@ if (typeof globalThis.process === 'undefined') {
 function ProcessPolyfillPlugin(): Plugin {
   return {
     name: "process-polyfill",
-    enforce: "post",
-    renderChunk(code) {
-      return processPolyfillCode + code
+    config() {
+      return {
+        build: {
+          rollupOptions: {
+            output: {
+              banner: processPolyfillCode
+            }
+          }
+        }
+      }
     }
   }
 }
 
 export default defineConfig({
   ...sharedConfig,
-  plugins: [...sharedConfig.plugins!, WatchVuePlugin(), ProcessPolyfillPlugin()],
+  plugins: [
+    ...sharedConfig.plugins!,
+    WatchVuePlugin(),
+    ProcessPolyfillPlugin()
+  ],
   define: {
     __DEV__: isDev,
     __NAME__: JSON.stringify(packageJson.name),
