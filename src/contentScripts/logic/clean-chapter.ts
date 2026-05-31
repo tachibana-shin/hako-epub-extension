@@ -29,10 +29,10 @@ export async function cleanChapter(
     $el.find(".none-print.inline").remove()
     $el.find(".note-content").parent().remove()
   })
-  $("script, noscript").remove()
 
   if (typeof qContainer !== "function") {
     $(`${qContainer} > a[target='__blank']`).remove()
+    $(`${qContainer} script, ${qContainer} noscript`).remove()
   }
 
   $("img").each((_, image) => {
@@ -53,7 +53,8 @@ export async function cleanChapter(
     if ($el.attr("style")?.match(/display:\s*none/)) $el.remove()
   })
 
-  const rawHtml = typeof qContainer === "function" ? qContainer($) : $(qContainer).html()
+  const rawHtml =
+    typeof qContainer === "function" ? qContainer($) : $(qContainer).html()
   if (!rawHtml) return null
 
   const output = await minify(rawHtml, {
