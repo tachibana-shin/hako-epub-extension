@@ -55,8 +55,9 @@ export async function getManifest() {
     },
     permissions: [
       "tabs",
-      // "storage",
+      "storage",
       "activeTab",
+      "alarms",
       // "sidePanel",
       "declarativeNetRequest",
       ...(isFirefox ? ["webRequest", "webRequestBlocking"] : [])

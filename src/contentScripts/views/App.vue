@@ -4,6 +4,7 @@ import { useEventListener } from "@vueuse/core"
 import { toast, Toaster } from "vue-sonner"
 import "vue-sonner/style.css"
 import "uno.css"
+import { STORAGE_KEY, type UpdateInfo } from "~/logic/check-update"
 
 // const [show, toggle] = useToggle(false)
 useEventListener(
@@ -27,6 +28,29 @@ useEventListener(
     }
   }
 )
+
+const CHECKED_KEY = "update-checked-session"
+
+onMounted(async () => {
+  if (sessionStorage.getItem(CHECKED_KEY)) return
+  sessionStorage.setItem(CHECKED_KEY, "1")
+
+  try {
+    const result = await browser.storage.local.get(STORAGE_KEY)
+    const info = result[STORAGE_KEY] as UpdateInfo | undefined
+    if (info?.hasUpdate) {
+      toast(`Hako EPub phiên bản ${info.latestVersion} đã phát hành`, {
+        action: {
+          label: "Cập nhật",
+          onClick: () => window.open(info.downloadUrl, "_blank")
+        },
+        duration: 10_000
+      })
+    }
+  } catch {
+    // storage not available, skip
+  }
+})
 </script>
 
 <template>

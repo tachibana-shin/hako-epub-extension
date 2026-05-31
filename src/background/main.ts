@@ -3,6 +3,7 @@
 
 import { isFirefox } from "~/env"
 import initiatorDomains from "../../registry?registry-domains"
+import { checkForUpdate, STORAGE_KEY } from "~/logic/check-update"
 
 // only on dev mode
 if (import.meta.hot) {
@@ -78,6 +79,20 @@ if (isFirefox) {
     addRules: rules
   })
 }
+
+async function runUpdateCheck() {
+  const info = await checkForUpdate()
+  if (info.hasUpdate) {
+    await browser.storage.local.set({ [STORAGE_KEY]: info })
+  }
+}
+
+browser.alarms.create("check-update", { periodInMinutes: 360 })
+browser.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === "check-update") runUpdateCheck()
+})
+
+runUpdateCheck()
 
 // // remove or turn this off if you don't use side panel
 // const USE_SIDE_PANEL = true
