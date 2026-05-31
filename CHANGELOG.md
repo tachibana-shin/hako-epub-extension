@@ -1,3 +1,15 @@
+# [0.7.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.3...v0.7.0) (2026-05-31)
+
+
+### Bug Fixes
+
+* **logic:** scope script removal to container ([f86115c](https://github.com/tachibana-shin/hako-epub-extension/commit/f86115cd5d332cd17b1cb6699eaf2804e6a3ffb6)), closes [#15](https://github.com/tachibana-shin/hako-epub-extension/issues/15)
+
+
+### Features
+
+* **self-update:** add app update check ([ab7007d](https://github.com/tachibana-shin/hako-epub-extension/commit/ab7007d121a8bd280dfb79b4b6ea5b4ee2012b7f))
+
 ## [0.6.3](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.2...v0.6.3) (2026-05-27)
 
 
