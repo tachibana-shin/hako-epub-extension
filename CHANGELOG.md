@@ -1,3 +1,10 @@
+## [0.7.3](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.7.2...v0.7.3) (2026-06-03)
+
+
+### Bug Fixes
+
+* release ([20838d7](https://github.com/tachibana-shin/hako-epub-extension/commit/20838d71793bb136a1abb153d158a3976a6106dd))
+
 ## [0.7.2](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.7.1...v0.7.2) (2026-06-03)
 
 
