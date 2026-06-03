@@ -18,7 +18,7 @@ export default defineRegistry({
   findTarget: (h3) => {
     let ul = h3.nextElementSibling
 
-    if (ul?.classList.contains("volume")) return ul as HTMLElement
+    if (ul?.classList.contains("volume") || ul?.tagName === "DL") return ul as HTMLElement
 
     if (ul && ul.tagName === "FIGURE") {
       ul = ul.nextElementSibling
