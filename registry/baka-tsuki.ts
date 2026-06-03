@@ -25,6 +25,16 @@ export default defineRegistry({
           ?.replace(/(width|height)=\d*/gi, "width=800") ?? undefined
       )
     }
+    if (ul && ul.tagName === "DL") {
+      const prev = h3.previousElementSibling
+      if (prev && prev.tagName === "FIGURE") {
+        return (
+          prev
+            .querySelector("img")
+            ?.getAttribute("src")
+            ?.replace(/(width|height)=\d*/gi, "width=800") ?? undefined
+        }
+    }
     if (ul && ul.classList.contains("volume")) {
       return (
         ul
