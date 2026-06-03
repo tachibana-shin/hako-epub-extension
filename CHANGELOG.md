@@ -1,3 +1,10 @@
+## [0.7.1](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.7.0...v0.7.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* **baka-tsuki:** Enhance image source retrieval for DL elements ([f6e6fbb](https://github.com/tachibana-shin/hako-epub-extension/commit/f6e6fbb56c4d8c551cce5e875b76d8956a0cd164))
+
 # [0.7.0](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.6.3...v0.7.0) (2026-05-31)
 
 
