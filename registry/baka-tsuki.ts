@@ -33,7 +33,8 @@ export default defineRegistry({
             .querySelector("img")
             ?.getAttribute("src")
             ?.replace(/(width|height)=\d*/gi, "width=800") ?? undefined
-        }
+        )
+      }
     }
     if (ul && ul.classList.contains("volume")) {
       return (
