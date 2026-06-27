@@ -59,8 +59,7 @@ export async function getManifest() {
       "activeTab",
       "alarms",
       // "sidePanel",
-      "declarativeNetRequest",
-      ...(isFirefox ? ["webRequest", "webRequestBlocking"] : [])
+      "declarativeNetRequest"
     ],
     host_permissions: ["*://*/*"],
     content_scripts: [
@@ -73,7 +72,10 @@ export async function getManifest() {
     ],
     web_accessible_resources: [
       {
-        resources: ["dist/contentScripts/hako-epub.css", "dist/contentScripts/inject.global.js"],
+        resources: [
+          "dist/contentScripts/hako-epub.css",
+          "dist/contentScripts/inject.global.js"
+        ],
         matches: host_permissions
       }
     ],

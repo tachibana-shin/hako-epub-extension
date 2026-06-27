@@ -1,9 +1,9 @@
 // import { onMessage } from "webext-bridge/background"
 // import { setMany } from "idb-keyval"
 
-import { isFirefox } from "~/env"
 import initiatorDomains from "../../registry?registry-domains"
 import { checkForUpdate, STORAGE_KEY } from "~/logic/check-update"
+import { DeclarativeNetRequest } from "webextension-polyfill"
 
 // only on dev mode
 if (import.meta.hot) {
@@ -13,72 +13,42 @@ if (import.meta.hot) {
   import("./contentScriptHMR")
 }
 
-if (isFirefox) {
-  browser.webRequest.onHeadersReceived.addListener(
-    (details) => {
-      const initiator = details.initiator || details.originUrl || ""
-
-      if (!initiatorDomains.some((domain) => initiator.includes(domain))) {
-        return {}
-      }
-
-      return {
-        responseHeaders: [
-          { name: "access-control-allow-origin", value: "*" },
-          {
-            name: "access-control-allow-methods",
-            value: "GET, POST, OPTIONS, HEAD, PUT, DELETE, PATCH"
-          },
-          { name: "access-control-allow-headers", value: "*" }
-        ]
-      }
+const rules: DeclarativeNetRequest.Rule[] = [
+  {
+    id: 1,
+    priority: 1,
+    action: {
+      type: "modifyHeaders",
+      responseHeaders: [
+        {
+          header: "access-control-allow-origin",
+          operation: "set",
+          value: "*"
+        },
+        {
+          header: "access-control-allow-methods",
+          operation: "set",
+          value: "GET, POST, OPTIONS, HEAD, PUT, DELETE, PATCH"
+        },
+        {
+          header: "access-control-allow-headers",
+          operation: "set",
+          value: "*"
+        }
+      ]
     },
-    {
-      urls: ["*://*/*#cors*"],
-      types: ["xmlhttprequest", "image", "media"]
-    },
-    ["blocking", "responseHeaders"]
-  )
-} else {
-  const rules = [
-    {
-      id: 1,
-      priority: 1,
-      action: {
-        type: "modifyHeaders",
-        responseHeaders: [
-          {
-            header: "access-control-allow-origin",
-            operation: "set",
-            value: "*"
-          },
-          {
-            header: "access-control-allow-methods",
-            operation: "set",
-            value: "GET, POST, OPTIONS, HEAD, PUT, DELETE, PATCH"
-          },
-          {
-            header: "access-control-allow-headers",
-            operation: "set",
-            value: "*"
-          }
-        ]
-      },
-      condition: {
-        urlFilter: "#cors|",
-        initiatorDomains,
-        resourceTypes: ["xmlhttprequest", "image", "media"]
-      }
+    condition: {
+      urlFilter: "#cors|",
+      initiatorDomains,
+      resourceTypes: ["xmlhttprequest", "image", "media"]
     }
-  ]
+  }
+]
 
-  // eslint-disable-next-line ts/ban-ts-comment
-  // @ts-expect-error
-  chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: [1],
-    addRules: rules
-  })
-}
+browser.declarativeNetRequest.updateDynamicRules({
+  removeRuleIds: [1],
+  addRules: rules
+})
 
 async function runUpdateCheck() {
   const info = await checkForUpdate()
