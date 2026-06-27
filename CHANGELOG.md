@@ -1,3 +1,10 @@
+## [0.7.4](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.7.3...v0.7.4) (2026-06-27)
+
+
+### Bug Fixes
+
+* **background:** failed load image on Firefox: unify DNR rule usage ([97a4a1c](https://github.com/tachibana-shin/hako-epub-extension/commit/97a4a1ca6bbe38445defd172cc209aaca52d2de5))
+
 ## [0.7.3](https://github.com/tachibana-shin/hako-epub-extension/compare/v0.7.2...v0.7.3) (2026-06-03)
 
 
